@@ -25,35 +25,29 @@ end
 % calcule de la matrice
 
 for k=2:len_B+1
-    disp(k);
     for l=2:len_A+1
         val_haut= m_res(k-1, l) + gap;
         val_gauche= m_res(k, l-1) + gap;
         
-        % recherche ind_A
-        for m=1: size(m_cor,1)         % faire de la recheche une fonction
-            if m_cor(m,1) == chaineA(l-1)
-                ind_A= m;
-            end
-        end
+        ind_A=recheche_cor(chaineA(l-1), m_cor);
+        ind_B=recheche_cor(chaineB(k-1), m_cor);
         
-        % recherche ind_B
-        for m=1: size(m_cor,1)         % faire de la recheche une fonction
-            if m_cor(m,1) == chaineB(k-1)
-                ind_B= m;
-            end
-        end
-                
         val_diago= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
         
-        disp([val_gauche val_haut val_diago]);
-
         m_res(k,l)= max([val_gauche val_haut val_diago]);
     end
-     imagesc(m_res);
-     %pause;
+    
 end
 
 % calcule du resultat
 
+end
+
+
+function indice = recheche_cor (car, m_cor)
+    for k=1: size(m_cor,1)
+        if m_cor(k,1) == car
+            indice = k;
+        end
+    end
 end
