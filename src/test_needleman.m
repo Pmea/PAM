@@ -15,5 +15,6 @@ gap= -1;
 
 [m_res, score]= f_needlenam(chaineA, chaineB, m_sim_simple, m_cor, gap);
 
+disp('SCORE');
 disp(score);
 imagesc(m_res);

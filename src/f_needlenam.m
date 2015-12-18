@@ -5,8 +5,6 @@ function [m_res, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap)
 % matrice de similarite
 % poid du gap
 
-score=0;
-
 %initialisation
 
 len_A= length(chaineA);
@@ -40,11 +38,18 @@ for k=2:len_B+1
 end
 
 % calcule du resultat
+score=0;    % A SUPPRIMER
 
+% il faut ajouter une matrice qui retiens la liste des peres pour chaque
+% case et puis patir de la fin et remonter au debut en remontant les peres 
+
+% attention, le max ne marche pas et certain peuvent avoir plusieurs peres
 end
 
 
 function indice = recheche_cor (car, m_cor)
+%retourne l'indice du caractere dans la matrice de similarite
+%a l'aide de la matrice de correspondance
     for k=1: size(m_cor,1)
         if m_cor(k,1) == car
             indice = k;
