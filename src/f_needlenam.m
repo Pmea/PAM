@@ -16,11 +16,12 @@ m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
 % pour la recheche d'antessedant on prend la convention gauche/diago/haut
 def_gau=1;  % define variable pour antessedant dans le tableau          
 def_dia=2;
-def_haut=3;
+def_hau=3;
+def_ini=0;
 
 for k=1:len_B
     m_res(k+1,1)= gap * k;
-    m_antes(k+1,1)= def_haut;
+    m_antes(k+1,1)= def_hau;
 end
 
 for l=1:len_A
@@ -46,13 +47,31 @@ for k=2:len_B+1
     
 end
 % calcule du resultat
-score=0;    % A SUPPRIMER
 
-% il faut ajouter une matrice qui retiens la liste des peres pour chaque
-% case et puis patir de la fin et remonter au debut en remontant les peres 
-
-% attention, le max ne marche pas et certain peuvent avoir plusieurs peres
+l=len_A+1;
+k=len_B+1;
+score=1;    %initialisation du score
+while  m_antes(k,l) ~= def_ini
+    score= score + 1 ;           %amelioration possible, creation du switch
+    if m_antes(k,l) == def_gau   %mais je ne sais pas faire et je n'ai pas internet   
+        l= l-1;
+    else
+        if m_antes(k,l) == def_dia
+            k= k-1;
+            l= l-1;
+        else
+            if m_antes(k,l) == def_hau
+                k= k-1;
+            else
+                disp('Erreur ');
+            end
+        end
+    end
 end
+
+
+end
+
 
 
 function indice = recheche_cor (car, m_cor)
