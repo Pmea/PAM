@@ -10,14 +10,22 @@ function [m_res, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap)
 len_A= length(chaineA);
 len_B= length(chaineB);
 
-m_res= zeros(len_A+1, len_B+1); % avec length+1 car il y a la case vite
-                                % au debut du mot
-for k=0:len_A
+m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
+m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
+
+% pour la recheche d'antessedant on prend la convention gauche/diago/haut
+def_gau=1;  % define variable pour antessedant dans le tableau          
+def_dia=2;
+def_haut=3;
+
+for k=1:len_B
     m_res(k+1,1)= gap * k;
+    m_antes(k+1,1)= def_haut;
 end
 
-for k=0:len_B
-    m_res(1,k+1)= gap * k;
+for l=1:len_A
+    m_res(1,l+1)= gap * l;
+    m_antes(1,l+1)= def_gau;
 end
 
 % calcule de la matrice
