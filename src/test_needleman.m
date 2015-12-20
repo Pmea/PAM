@@ -17,4 +17,5 @@ gap= -1;
 
 disp('SCORE');
 disp(score);
+figure;
 imagesc(m_res);

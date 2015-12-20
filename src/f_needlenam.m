@@ -40,11 +40,11 @@ for k=2:len_B+1
         
         val_diago= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
         
-        m_res(k,l)= max([val_gauche val_haut val_diago]);
+        [m_res(k,l), ind_antes]= max([val_gauche val_diago val_haut]);
+        m_antes(k,l)= ind_antes;
     end
     
 end
-
 % calcule du resultat
 score=0;    % A SUPPRIMER
 
