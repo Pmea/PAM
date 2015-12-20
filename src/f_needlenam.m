@@ -63,7 +63,8 @@ while  m_antes(k,l) ~= def_ini
             if m_antes(k,l) == def_hau
                 k= k-1;
             else
-                disp('Erreur ');
+                disp('Erreur valeur de l''antessedant');
+                break;
             end
         end
     end
