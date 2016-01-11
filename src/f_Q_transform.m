@@ -36,6 +36,7 @@ end
 m_spect= zeros(1, nb_note);
 frames= round((v_len_sig - v_len_frames)/hop-1);  %nb de frame pour la tfct
 
+
 for k= 1: frames;
    v_fensig= sig(k* hop: k*hop+len_fen-1) .* v_fen(k,:);
    m_spect(k,:)= abs(fft(v_fensig, Nfft));  %faut il garder la phase
