@@ -15,48 +15,54 @@ v_f= freq_la_ref * 2.^((v_mk- 69)/12); % les frequences des differentes bandes
 
 % Creation des sinusoides pour les fenetres
 v_len_fen= floor((Q * Cw) ./ (v_f/Fe));  % la longeur de la fenetre pour chaque bande
-max_len_fen= v_len_fen(1);
-%v_period_f= floor(Fe./ v_len_fen); % peut etre que seul la premiere et utilise
+max_len_fen= v_len_fen(1); 
 
-period_f=floor(Fe/v_f(1));
-m_sinus= zeros(nb_note,period_f);
+period_f= max_len_fen;          % variable a supprimer car inutile
+m_cosin= zeros(nb_note,period_f);
 
 a= (1: period_f)/Fe; %changer le nom de la variable
 for k=1:nb_note
-    m_sinus(k,:)= sin(a * v_f(k)*2*pi);
+    m_cosin(k,:)= cos(a * v_f(k)*2*pi);
+end
+
+% figure;
+% hold on;
+% plot(m_cosin(1,:));
+% plot(m_cosin(13,:));
+% title('Les cosinusoides');
+% hold off;
+
+% Calcule des fenetres a partir des sinosoides
+
+for k= 1: nb_note
+    v_fen_tmp= hann(v_len_fen(k), 'periodic'); 
+    deb= floor((max_len_fen - length(v_fen_tmp))/2)+1;
+    fin= floor((max_len_fen + length(v_fen_tmp))/2);
+%     figure;
+%     hold on;
+%     plot(m_cosin(k,:),'blue');
+    m_fen(k, deb : fin)= v_fen_tmp(1:fin-deb+1);
+%     plot(m_fen(k,:), 'green');
+    m_fen(k, deb : fin)= m_fen(k, deb : fin) .* m_cosin(k,deb:fin); %
+%     plot(m_fen(k,:), 'red');
+%     hold off;
 end
 
 figure;
 hold on;
-plot(m_sinus(1,:));
-plot(m_sinus(13,:));
+plot(m_fen(1,:));
+plot(m_fen(13,:));
+title('Les fenetres');
 hold off;
-% Calcule des fenetres a partir des sinosoides
+
+disp('youyou');
 
 % Application de la fft
 
-v_mk= (note_min : note_max);  %les note midi du A0 au G#8
-v_f= freq_la_ref * 2.^((v_mk- 69)/12); % les frequences des differentes bandes
+hop =  / 3; % va etre dirigier par la taille de la plus petite fenetre 
 
-%c'est quoi l'unité ? les frequences on les changes en bin ?
-v_len_fen= floor((Q * Cw) ./ (v_f/Fe)); % la longeur de la fenetre pour chaque bande
-
-% il faut calculer la premiere pour definir la taille
-len_fen= v_len_fen(1); % la taille la plus grande ( le plus bas en freq)
-m_fen= zeros(nb_note, len_fen); % on met toute les valeurs 
-
-% il faut encore faire des trucs la pour que ca marche
-for k= 1: nb_note
-    v_fen_tmp= hann( v_len_fen(k), 'periodic'); 
-    deb= floor((len_fen - length(v_fen_tmp))/2)+1;
-    fin= floor((len_fen + length(v_fen_tmp))/2);
-    m_fen(k, deb : fin)= v_fen_tmp(1:fin-deb+1);
-end
-
-%tfct 
-frames= round((v_len_sig - v_len_frames)/hop-2);  %nb de frame pour la tfct
-m_spect= zeros(frames, Nfft);
-
+frames= round((v_len_sig - v_len_frames*10)/hop-1);  %nb de frame pour la tfct
+m_spect= zeros(frames, nb_note);
 
 for k= 1: frames
    deb= k*hop;
