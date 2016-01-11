@@ -15,7 +15,8 @@ cd ../The_Beatles_Annotations/chordlab/The_Beatles;
 albumsfolder=pwd;
 A=ls;
 albums = strsplit(A);
-    %on va parser chaque élément du string : c'est tout les dossier
+    %on va parser chaque élément de la chaine de caractere  : c'est
+    %l'ensemble des dossiers
 
 for p=1:length(albums)-1
     name = char(albums(p)); 
