@@ -2,7 +2,7 @@
 function [cout_m]= f_smith_waterman(chaineA, chaineB, penality,gap)
 len_A= length(chaineA)+1;
 len_B= length(chaineB)+1;
-%penalty ici fait office dans penality_m de mismatch
+%penality ici fait office dans penality_m de mismatch
 verbose=1;
 plotAlignement=1;
 
