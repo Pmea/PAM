@@ -65,17 +65,17 @@ m_spect= zeros(frames, nb_note);
 
 disp(frames);
 
-sig= sig';
+sig= sig';      %on transpose le signal un fois pour ne pas avoir a le faire a chaque fois
 for k= 1: frames
    deb= k*hop;
    fin= k*hop + max_len_fen - 1;
    disp([k fin-deb ]);
 
    for l=1:nb_note
-       m_spect(k,l)= sum(abs(sig(deb:fin) .* m_fen(l,:)));
+       m_spect(k,l)= abs(sum(sig(deb:fin) .* m_fen(l,:)));
    end
 end
 figure;
-imagesc(m_spect);
+imagesc(m_spect');
 
 end

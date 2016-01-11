@@ -6,6 +6,6 @@ sig= sin((1:Fe)/Fe*440*2*pi)';
 plot(sig);
 freq_la_ref= 440;
 
-Q=10;
+Q=15;
 
 sepctrum= f_Q_transform(sig, Fe, Q, freq_la_ref);
