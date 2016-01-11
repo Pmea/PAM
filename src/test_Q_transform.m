@@ -1,3 +1,5 @@
+close all;
+clear all;
 [sig, Fe]= audioread('song.wav');
 Nfft= 2^12;
 freq_la_ref= 440;
