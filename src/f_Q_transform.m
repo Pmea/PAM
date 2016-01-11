@@ -58,7 +58,7 @@ end
 % hold off;
 
 % Application de la fft
-hop = min_len_fen / 3;  
+hop = floor(min_len_fen / 3);  
 
 frames= round((v_len_sig - max_len_fen)/hop-1);  %nb de frame pour la tfct
 m_spect= zeros(frames, nb_note);
