@@ -31,23 +31,31 @@ end
 % Application de la CQT
 hop = floor(min_len_fen / 3);  
 
-frames= round((v_len_sig - max_len_fen)/hop-1);  %nb de frame pour la tfct
+frames= round((v_len_sig - max_len_fen - (ceil(max_len_fen/2)))/hop);  %nb de frame pour la tfct
 m_spect= zeros(frames, nb_note);
 
-disp(frames);         % affichage
+disp(frames);           % affichage
 disp('appuyez pour lancer');
 pause();
 
 v_sig= v_sig'; % transposition du vecteur colone en vercteur ligne
+
+v_e= zeros(nb_note, max_len_fen);
+for l=1:nb_note
+    deb= 1 - ceil(max_len_fen/2);
+    fin= + floor(max_len_fen/2);
+    v_e(l,:)= exp(-1j * 2 * pi * v_f_red(l) * (deb:fin));    
+    v_e(l,:)= m_fen(l,:) .* v_e(l,:);
+end
+
 for k= 1: frames
-   deb= k*hop;
-   fin= k*hop + max_len_fen - 1;
+   deb= (k-1)*hop + 1 + ceil(max_len_fen/2);
+   fin= (k-1)*hop + max_len_fen  + ceil(max_len_fen/2);
    disp(k);
 
    % compute de la CQT 
    for l=1:nb_note
-       v_e= exp(-1j * 2 * pi * v_f_red(l) * (deb:fin));
-       m_spect(k,l)=  sum( m_fen(l,:) .* v_sig(deb:fin) .* v_e);
+       m_spect(k,l)=  sum(v_sig(deb:fin) .* v_e(1: max_len_fen));
    end
    
 end
