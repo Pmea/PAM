@@ -42,8 +42,8 @@ v_sig= v_sig'; % transposition du vecteur colone en vercteur ligne
 
 v_e= zeros(nb_note, max_len_fen);
 for l=1:nb_note
-    deb= 1 - ceil(max_len_fen/2);
-    fin= + floor(max_len_fen/2);
+    deb= 1 - ceil(max_len_fen/2);  % on centre le sinus dans le fenetre
+    fin= + floor(max_len_fen/2);   % pour avoir de bon resultat avec Q petit
     v_e(l,:)= exp(-1j * 2 * pi * v_f_red(l) * (deb:fin));    
     v_e(l,:)= m_fen(l,:) .* v_e(l,:);
 end
