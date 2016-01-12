@@ -1,7 +1,7 @@
-function [m_spect]= f_Q_transform(sig, Fe, Q, freq_la_ref)
+function [m_spect]= f_Q_transform(v_sig, Fe, Q, freq_la_ref)
 
 % Varible
-v_len_sig= length(sig);
+v_len_sig= length(v_sig);
 
 Cw=1.82;
 % Calcule des frequences par rapport au fonction midi
@@ -15,48 +15,26 @@ v_f= freq_la_ref * 2.^((v_mk- 69)/12); % les frequences des differentes bandes
 % figure;
 % plot(v_f);
 
-% Creation des sinusoides pour les fenetres
+% Creation des longeurs des fenetres
 v_len_fen= floor((Q * Cw) ./ (v_f/Fe));  % la longeur de la fenetre pour chaque bande
 max_len_fen= v_len_fen(1); 
 min_len_fen= v_len_fen(end);
 
-m_cosin= zeros(nb_note, max_len_fen);
-
-a= (1: ceil(max_len_fen/2))/Fe; %changer le nom de la variable % le ceil peut peut etre faire des problemes 
-for k=1:nb_note
-    v_cos_tmp= cos(a * v_f(k)*2*pi);
-    m_cosin(k,:)=  [fliplr(v_cos_tmp) v_cos_tmp];
-end
-
-% figure;
-% hold on;
-% plot(m_cosin(1,:));
-% plot(m_cosin(13,:));
-% title('Les cosinusoides');
-% hold off;
-
-
 % Calcule des fenetres a partir des sinosoides
+m_fen= zeros(nb_note, max_len_fen);
 for k= 1: nb_note
     v_fen_tmp= hann(v_len_fen(k), 'periodic'); 
     deb= floor((max_len_fen - length(v_fen_tmp))/2)+1;
     fin= floor((max_len_fen + length(v_fen_tmp))/2);
-%      figure;
-%      hold on;
-%      plot(m_cosin(k,:),'blue');
     m_fen(k, deb : fin)= v_fen_tmp(1:fin-deb+1);
-%      plot(m_fen(k,:), 'green');
-    m_fen(k, deb : fin)= m_fen(k, deb : fin) .* m_cosin(k,deb:fin); %
-%      plot(m_fen(k,:), 'red');
-%      hold off;
 end
 
-figure;
-hold on;
-plot(m_fen(1,:));
-plot(m_fen(13,:));
-title('Les fenetres');
-hold off;
+% figure;
+% hold on;
+% plot(m_fen(1,:));
+% plot(m_fen(13,:));
+% title('Les fenetres');
+% hold off;
 
 % Application de la fft
 hop = floor(min_len_fen / 3);  
@@ -66,17 +44,21 @@ m_spect= zeros(frames, nb_note);
 
 disp(frames);
 pause();
-sig= sig';      %on transpose le signal un fois pour ne pas avoir a le faire a chaque fois
+
+v_sig= v_sig';      %on transpose le signal un fois pour ne pas avoir a le faire a chaque fois
 for k= 1: frames
    deb= k*hop;
    fin= k*hop + max_len_fen - 1;
    disp(k);
 
+   % compute de la CQT 
    for l=1:nb_note
-       m_spect(k,l)= abs(sum(sig(deb:fin) .* m_fen(l,:))); % abs(sum) et non sum(abs)
+       m_spect(k,l)=  sum( m_fen(l,:) .* v_sig(deb:fin) .* exp(-1j * 2 * pi * v_f(l)/Fe * (deb:fin)));
    end
+   
+   
 end
 figure;
-imagesc(m_spect');
+imagesc(abs(m_spect'));
 
 end
