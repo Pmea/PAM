@@ -22,9 +22,10 @@ min_len_fen= v_len_fen(end);
 
 m_cosin= zeros(nb_note, max_len_fen);
 
-a= (1: max_len_fen)/Fe; %changer le nom de la variable
+a= (1: ceil(max_len_fen/2))/Fe; %changer le nom de la variable % le ceil peut peut etre faire des problemes 
 for k=1:nb_note
-    m_cosin(k,:)= cos(a * v_f(k)*2*pi);
+    v_cos_tmp= cos(a * v_f(k)*2*pi);
+    m_cosin(k,:)=  [fliplr(v_cos_tmp) v_cos_tmp];
 end
 
 % figure;
@@ -40,22 +41,22 @@ for k= 1: nb_note
     v_fen_tmp= hann(v_len_fen(k), 'periodic'); 
     deb= floor((max_len_fen - length(v_fen_tmp))/2)+1;
     fin= floor((max_len_fen + length(v_fen_tmp))/2);
-%     figure;
-%     hold on;
-%     plot(m_cosin(k,:),'blue');
+%      figure;
+%      hold on;
+%      plot(m_cosin(k,:),'blue');
     m_fen(k, deb : fin)= v_fen_tmp(1:fin-deb+1);
-%     plot(m_fen(k,:), 'green');
+%      plot(m_fen(k,:), 'green');
     m_fen(k, deb : fin)= m_fen(k, deb : fin) .* m_cosin(k,deb:fin); %
-%     plot(m_fen(k,:), 'red');
-%     hold off;
+%      plot(m_fen(k,:), 'red');
+%      hold off;
 end
 
-% figure;
-% hold on;
-% plot(m_fen(1,:));
-% plot(m_fen(13,:));
-% title('Les fenetres');
-% hold off;
+figure;
+hold on;
+plot(m_fen(1,:));
+plot(m_fen(13,:));
+title('Les fenetres');
+hold off;
 
 % Application de la fft
 hop = floor(min_len_fen / 3);  
@@ -64,15 +65,15 @@ frames= round((v_len_sig - max_len_fen)/hop-1);  %nb de frame pour la tfct
 m_spect= zeros(frames, nb_note);
 
 disp(frames);
-
+pause();
 sig= sig';      %on transpose le signal un fois pour ne pas avoir a le faire a chaque fois
 for k= 1: frames
    deb= k*hop;
    fin= k*hop + max_len_fen - 1;
-   disp([k fin-deb ]);
+   disp(k);
 
    for l=1:nb_note
-       m_spect(k,l)= abs(sum(sig(deb:fin) .* m_fen(l,:)));
+       m_spect(k,l)= abs(sum(sig(deb:fin) .* m_fen(l,:))); % abs(sum) et non sum(abs)
    end
 end
 figure;
