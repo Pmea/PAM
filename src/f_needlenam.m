@@ -64,7 +64,7 @@ while  m_antes(k,l) ~= def_ini
                 k= k-1;
             else
                 disp('Erreur valeur de l''antecedant');
-                break;
+                assert(true);
             end
         end
     end

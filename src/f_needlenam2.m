@@ -84,40 +84,36 @@ k=len_B+1;
 score= 1;    %initialisation du score
 
 [~, ind_a]= max([m_Lx(k,l) m_res(k,l) m_Ly(k,l) ]);
-if ind_a == def_ant_res
-    m_antes=m_antes_res;
-else
-    if ind_a == def_ant_Ly
-        m_antes=m_antes_Ly;
-    else
-        if ind_a == def_ant_Lx
-            m_antes=m_antes_Lx;
-        else
-            disp('Erreur valeur de l''antessedant');
-            pause;
-        end
-    end
+
+switch ind_a
+   case def_ant_res
+       m_antes=m_antes_res;
+   case def_ant_Ly
+       m_antes=m_antes_Ly;
+   case def_ant_Lx
+       m_antes=m_antes_Lx;
+    otherwise
+       disp('Erreur valeur de l''antessedant');
+       assert(true);
 end
 
 while  m_antes(k,l) ~= def_init
-    score= score + 1 ;           %amelioration possible, creation du switch
-    if m_antes(k,l) == def_ant_res   %mais je ne sais pas faire et je n'ai pas internet   
+    score= score + 1 ;       
+    
+    switch m_antes(k,l)
+        case def_ant_res
             k= k-1;
             l= l-1;
             m_antes=m_antes_res;
-    else
-        if m_antes(k,l) == def_ant_Lx
+        case def_ant_Lx
             k=k-1;
             m_antes=m_antes_Lx;
-        else
-            if m_antes(k,l) == def_ant_Ly 
-                l= l-1;
-                m_antes=m_antes_Ly;
-            else
-                disp('Erreur valeur de l''antecedant');
-                break;
-            end
-        end
+        case def_ant_Ly
+            l= l-1;
+            m_antes=m_antes_Ly;
+        otherwise
+            disp('Erreur valeur de l''antessedant');
+            assert(true);
     end
 end
 
