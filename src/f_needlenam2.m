@@ -1,4 +1,4 @@
-function [m_res, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap)
+function [m_res, score]= f_needlenam2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap)
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -22,11 +22,11 @@ def_hau=3;
 def_ini=0;
 
 for l=1:len_B
-    m_Ly(l+1,1)= open_gap + ext_gap * k;
+    m_Ly(l+1,1)= open_gap + ext_gap * l;
 end
 
 for k=1:len_A
-    m_Lx(1,k+1)= open_gap + ext_gap * l;
+    m_Lx(1,k+1)= open_gap + ext_gap * k;
 end
 
 % calcule de la matrice
@@ -41,7 +41,7 @@ for k=2:len_B+1
         
         % pour Ly
         val_open_Ly= m_res(k-1,l) + ext_gap + open_gap;
-        val_ext_Ly= m_Ly(k-1,l) + exp_gap;
+        val_ext_Ly= m_Ly(k-1,l) + ext_gap;
         m_Ly(k,l)= max([val_open_Ly val_ext_Ly]);
         %il faudra faire la sauvegarde de l'antecedant
         
@@ -56,7 +56,7 @@ for k=2:len_B+1
         val_Ly= m_Ly(k-1, l-1) + delta;
         val_res=  m_res(k-1,l-1) + delta;
         
-        [m_res(k,l), ind_antes]= max([val_Lx val_res val_Ly]);
+        %[m_res(k,l), ind_antes]= max([val_Lx val_res val_Ly]);
     end
 end
 
