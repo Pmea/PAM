@@ -8,7 +8,7 @@ clear all;
 plot(sig);
 freq_la_ref= 440;
 
-Q=15;
+Q=20;
 
 note_min=45;
 note_max= 104;
@@ -22,11 +22,9 @@ imagesc(abs(flipud(spectrum)));
 
 chroma= zeros(frames, 12);
 
-do_ref= 7;
-
 for k= 1:frames
     for l=1:acti_note
-        pos= mod(l+ note_min - do_ref +6, 12)+1;
+        pos= mod(l+ note_min -1 , 12)+1;
         chroma(k, pos)= chroma(k, pos) + abs(spectrum(l, k));
     end
 end
