@@ -13,25 +13,41 @@ len_B= length(chaineB);
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
 m_Lx= zeros(len_A+1, len_B+1);
 m_Ly= zeros(len_A+1, len_B+1);
-m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
+
+m_antes_res= zeros(len_A+1, len_B+1);   % au debut du mot
+m_antes_Lx= zeros(len_A+1, len_B+1);
+m_antes_Ly= zeros(len_A+1, len_B+1);
+
 
 % pour la recheche d'antessedant on prend la convention gauche/diago/haut
-def_gau=1;  % define variable pour antessedant dans le tableau          
-def_dia=2;
-def_hau=3;
-def_ini=0;
+def_ant_Lx=1;  % define variable pour antessedant dans le tableau          
+def_ant_res=2;
+def_ant_Ly=3;
+
+def_init=0;
+
+m_antes_res(:,:)= -1;
+m_antes_Lx(:,:)= -1;
+m_antes_Ly(:,:)= -1;
 
 for l=1:len_B+1
     m_res(l,1)=  open_gap + ext_gap * l;
-    m_Ly(l,1)= open_gap + ext_gap * l;
+    m_antes_res(l,1)= def_ant_res;    
+    m_Ly(l,1)= -Inf;
+    m_antes_Ly(l,1)= def_ant_Ly;
 end
 
 for k=1:len_A+1
     m_res(1,k)=  open_gap + ext_gap * k;
-    m_Lx(1,k)= open_gap + ext_gap * k;
+    m_antes_res(1,k)= def_ant_res;
+    m_Lx(1,k)= -Inf;
+    m_antes_Lx(1,k)= def_ant_Lx;
 end
 
 m_res(1,1)=0;
+m_antes_Ly(1,1)= def_init;
+m_antes_Lx(1,1)= def_init;
+m_antes_res(1,1)= def_init;
 
 % calcule de la matrice
 
@@ -41,32 +57,77 @@ for k=2:len_B+1
         % pour Ly
         val_open_Ly= m_res(k, l-1) + ext_gap + open_gap;
         val_ext_Ly=  m_Ly(k, l-1) + ext_gap;
-        m_Ly(k,l)= max([val_open_Ly val_ext_Ly]);
+        [m_Ly(k,l) m_antes_Ly(k,l)]= max([-Inf val_open_Ly val_ext_Ly]);
         %il faudra faire la sauvegarde l'antecedant
         
         % pour Lx
         val_open_Lx= m_res(k-1,l) + ext_gap + open_gap;
         val_ext_Lx= m_Lx(k-1,l) + ext_gap;
-        m_Lx(k,l)= max([val_open_Lx val_ext_Lx]);
+        [m_Lx(k,l) m_antes_Lx(k,l) ]= max([val_ext_Lx val_open_Lx -Inf]);
+
         %il faudra faire la sauvegarde de l'antecedant
-        
         
         % pour res
         ind_A=recheche_cor(chaineA(l-1), m_cor);
         ind_B=recheche_cor(chaineB(k-1), m_cor);
         delta= m_sim(ind_A, ind_B);
+        
         %calcule du match pour les trois
     
         val_Lx= m_Lx(k-1, l-1) + delta; 
         val_Ly= m_Ly(k-1, l-1) + delta;
         val_res=  m_res(k-1,l-1) + delta;
         
-        m_res(k,l)= max([val_Lx val_res val_Ly]);
+        [m_res(k,l) m_antes_res(k,l)]= max([val_Lx val_res val_Ly]);
     end
 end
 
-score=0;
+% calcule du resultat
+l=len_A+1;
+k=len_B+1;
+score= 1;    %initialisation du score
+
+[~, ind_a]= max([m_Lx(k,l) m_res(k,l) m_Ly(k,l) ]);
+if ind_a == def_ant_res
+    m_antes=m_antes_res;
+else
+    if ind_a == def_ant_Ly
+        m_antes=m_antes_Ly;
+    else
+        if ind_a == def_ant_Lx
+            m_antes=m_antes_Lx;
+        else
+            disp('Erreur valeur de l''antessedant');
+            pause;
+        end
+    end
 end
+
+while  m_antes(k,l) ~= def_init
+    disp([k l]);
+    score= score + 1 ;           %amelioration possible, creation du switch
+    if m_antes(k,l) == def_ant_res   %mais je ne sais pas faire et je n'ai pas internet   
+            k= k-1;
+            l= l-1;
+            m_antes=m_antes_res;
+    else
+        if m_antes(k,l) == def_ant_Lx
+            k=k-1;
+            m_antes=m_antes_Lx;
+        else
+            if m_antes(k,l) == def_ant_Ly 
+                l= l-1;
+                m_antes=m_antes_Ly;
+            else
+                disp('Erreur valeur de l''antecedant');
+                break;
+            end
+        end
+    end
+end
+
+end
+
 
 
 function indice = recheche_cor (car, m_cor)

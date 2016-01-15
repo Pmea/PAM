@@ -50,6 +50,7 @@ end
 l=len_A+1;
 k=len_B+1;
 score=1;    %initialisation du score
+
 while  m_antes(k,l) ~= def_ini
     score= score + 1 ;           %amelioration possible, creation du switch
     if m_antes(k,l) == def_gau   %mais je ne sais pas faire et je n'ai pas internet   
@@ -62,7 +63,7 @@ while  m_antes(k,l) ~= def_ini
             if m_antes(k,l) == def_hau
                 k= k-1;
             else
-                disp('Erreur valeur de l''antessedant');
+                disp('Erreur valeur de l''antecedant');
                 break;
             end
         end
