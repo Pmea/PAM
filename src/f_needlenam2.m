@@ -57,15 +57,12 @@ for k=2:len_B+1
         % pour Ly
         val_open_Ly= m_res(k, l-1) + ext_gap + open_gap;
         val_ext_Ly=  m_Ly(k, l-1) + ext_gap;
-        [m_Ly(k,l) m_antes_Ly(k,l)]= max([-Inf val_open_Ly val_ext_Ly]);
-        %il faudra faire la sauvegarde l'antecedant
+        [m_Ly(k,l), m_antes_Ly(k,l)]= max([-Inf val_open_Ly val_ext_Ly]);
         
         % pour Lx
         val_open_Lx= m_res(k-1,l) + ext_gap + open_gap;
         val_ext_Lx= m_Lx(k-1,l) + ext_gap;
-        [m_Lx(k,l) m_antes_Lx(k,l) ]= max([val_ext_Lx val_open_Lx -Inf]);
-
-        %il faudra faire la sauvegarde de l'antecedant
+        [m_Lx(k,l), m_antes_Lx(k,l) ]= max([val_ext_Lx val_open_Lx -Inf]);
         
         % pour res
         ind_A=recheche_cor(chaineA(l-1), m_cor);
@@ -73,12 +70,11 @@ for k=2:len_B+1
         delta= m_sim(ind_A, ind_B);
         
         %calcule du match pour les trois
-    
         val_Lx= m_Lx(k-1, l-1) + delta; 
         val_Ly= m_Ly(k-1, l-1) + delta;
         val_res=  m_res(k-1,l-1) + delta;
         
-        [m_res(k,l) m_antes_res(k,l)]= max([val_Lx val_res val_Ly]);
+        [m_res(k,l), m_antes_res(k,l)]= max([val_Lx val_res val_Ly]);
     end
 end
 
@@ -104,7 +100,6 @@ else
 end
 
 while  m_antes(k,l) ~= def_init
-    disp([k l]);
     score= score + 1 ;           %amelioration possible, creation du switch
     if m_antes(k,l) == def_ant_res   %mais je ne sais pas faire et je n'ai pas internet   
             k= k-1;
