@@ -8,28 +8,18 @@ clear all;
 plot(sig);
 freq_la_ref= 440;
 
-Q=20;
+Q=100;
 
-note_min=45;
-note_max= 104;
+note_midi_min=45;
+note_midi_max= 104;
 
-spectrum= f_Q_transform(sig, Fe, Q, note_min, note_max, freq_la_ref);
+spectrum= f_Q_transform(sig, Fe, Q, note_midi_min, note_midi_max, freq_la_ref);
 
 figure;
 imagesc(abs(flipud(spectrum)));
 
-[acti_note, frames]= size(spectrum);
-
-chroma= zeros(frames, 12);
-
-for k= 1:frames
-    for l=1:acti_note
-        pos= mod(l+ note_min -1 , 12)+1;
-        chroma(k, pos)= chroma(k, pos) + abs(spectrum(l, k));
-    end
-end
+chroma= f_CQTtoChroma(abs(spectrum), note_midi_min);
 
 figure; 
-imagesc(chroma');
-
+imagesc(chroma);
 
