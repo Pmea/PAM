@@ -46,18 +46,29 @@ for k=2:len_B+1
         %il faudra faire la sauvegarde de l'antecedant
         
         % pour res
-        val_haut= m_res(k-1, l) + gap;
-        val_gauche= m_res(k, l-1) + gap;
         
         ind_A=recheche_cor(chaineA(l-1), m_cor);
         ind_B=recheche_cor(chaineB(k-1), m_cor);
-        
-        val_diago= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
-        
-        [m_res(k,l), ind_antes]= max([val_gauche val_diago val_haut]);
-        m_antes(k,l)= ind_antes;
-    end
+        delta= m_sim(ind_A, ind_B);
+        %calcule du match pour les trois
     
+        val_Lx= m_Lx(k-1, l-1) + delta; 
+        val_Ly= m_Ly(k-1, l-1) + delta;
+        val_res=  m_res(k-1,l-1) + delta;
+        
+        [m_res(k,l), ind_antes]= max([val_Lx val_res val_Ly]);
+    end
 end
 
+end
+
+
+function indice = recheche_cor (car, m_cor)
+%retourne l'indice du caractere dans la matrice de similarite
+%a l'aide de la matrice de correspondance
+    for k=1: size(m_cor,1)
+        if m_cor(k,1) == car
+            indice = k;
+        end
+    end
 end
