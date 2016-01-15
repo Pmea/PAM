@@ -8,6 +8,6 @@ function [m_chroma]= f_CQTtoChroma(m_spectrum, note_min )
             pos= mod(l+ note_min -1 , 12)+1;
             m_chroma(k, pos)= m_chroma(k, pos) + m_spectrum(l, k);
         end
-    end
-
+   end
+   m_chroma= m_chroma';
 end
