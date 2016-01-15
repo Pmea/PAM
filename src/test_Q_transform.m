@@ -8,7 +8,7 @@ clear all;
 plot(sig);
 freq_la_ref= 440;
 
-Q=100;
+Q=20;
 
 note_midi_min=45;
 note_midi_max= 104;

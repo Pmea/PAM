@@ -50,7 +50,6 @@ end
 for k= 1: frames
    deb= k*hop + ceil(max_len_fen/2);
    fin= k*hop + max_len_fen - 1 + ceil(max_len_fen/2);
-  % disp(k);
 
    % compute de la CQT 
    for l=1:nb_note
