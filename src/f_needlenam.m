@@ -52,21 +52,18 @@ k=len_B+1;
 score=1;    %initialisation du score
 
 while  m_antes(k,l) ~= def_ini
-    score= score + 1 ;           %amelioration possible, creation du switch
-    if m_antes(k,l) == def_gau   %mais je ne sais pas faire et je n'ai pas internet   
-        l= l-1;
-    else
-        if m_antes(k,l) == def_dia
+    score= score + 1 ;    
+    switch m_antes(k,l)
+        case def_gau
+            l= l-1;
+        case def_dia 
             k= k-1;
             l= l-1;
-        else
-            if m_antes(k,l) == def_hau
-                k= k-1;
-            else
-                disp('Erreur valeur de l''antecedant');
-                assert(true);
-            end
-        end
+        case def_hau
+            k= k-1;
+        otherwise
+            disp('Erreur valeur de l''antecedant');
+            assert(true);
     end
 end
 
