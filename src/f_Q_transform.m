@@ -1,12 +1,11 @@
-function [m_spect]= f_Q_transform(v_sig, Fe, Q, freq_la_ref)
+function [m_spect]= f_Q_transform(v_sig, Fe, Q,note_min, note_max, freq_la_ref)
 
 % Varible
 v_len_sig= length(v_sig);
 
 Cw=1.82; % le Cw de la fenetre de Hann
 % Calcule des frequences par rapport au fonction midi
-note_min= 45;   % valeur midi de note min et max
-note_max= 104;
+
 nb_note= note_max - note_min +1;
 
 v_mk= (note_min : note_max);  %les notes midi 
