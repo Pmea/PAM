@@ -30,7 +30,6 @@ for l=1:len_A
 end
 
 % calcule de la matrice
-
 for k=2:len_B+1
     for l=2:len_A+1
         val_haut= m_res(k-1, l) + gap;
