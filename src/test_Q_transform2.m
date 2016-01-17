@@ -8,10 +8,10 @@ clear all;
 plot(sig);
 freq_la_ref= 440;
 
-Q=20;
+Q=10;
 
 note_midi_min=21;
-note_midi_max= 104;
+note_midi_max= 127;
 
 spectrum= f_Q_transform2(sig, Fe, Q, note_midi_min, note_midi_max, freq_la_ref);
 
