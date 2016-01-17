@@ -1,7 +1,7 @@
 function [m_spect]= f_Q_transform(v_sig, Fe, Q,note_min, note_max, freq_la_ref)
 
 % Varible
-Nfft= 2^17;
+Nfft= 2^15;
 
 v_len_sig= length(v_sig);
 

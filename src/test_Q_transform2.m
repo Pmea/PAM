@@ -13,7 +13,7 @@ Q=40;
 % note_midi_min= 45;
 % note_midi_max= 92;
 
-note_midi_min= 21; 
+note_midi_min= 33; 
 note_midi_max= 116;
 
 spectrum= f_Q_transform2(sig, Fe, Q, note_midi_min, note_midi_max, freq_la_ref);
