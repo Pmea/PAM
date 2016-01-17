@@ -36,33 +36,41 @@ frames= round((v_len_sig - max_len_fen - ceil(max_len_fen/2))/hop-1);  %nb de fr
 m_spect= zeros(frames, nb_note);
 
 disp(frames);         % affichage
-%disp('appuyez pour lancer');
-%pause();
+% disp('appuyez pour lancer');
+% pause();
 
 v_sig= v_sig'; % transposition du vecteur colone en vercteur ligne
 
 v_e= zeros(nb_note, max_len_fen);
-V_E_freq=  zeros(nb_note, Nfft);
+v_e_freq=  zeros(nb_note, Nfft);
 
 a= (1:max_len_fen)/Fe;
+
+disp('calcul filtre');
 for l=1:nb_note
         v_e(l,:)= sin(a .* v_f(l) .* 2 .*pi);   
     v_e(l,:)= m_fen(l,:) .* v_e(l,:);
-    V_E_freq(l,:)= fft(v_e(l,:), Nfft);
+    v_e_freq(l,:)= fft(v_e(l,:), Nfft);
 end
 
-for k= 1: frames
+% creation de la tfct
+ disp('calcule TFCT');
+m_tfct_sig= zeros(frames, Nfft);
+for k=1: frames
    deb= k*hop + ceil(max_len_fen/2);
    fin= k*hop + max_len_fen - 1 + ceil(max_len_fen/2);
-
-   % compute de la CQT 
-   for l=1:nb_note
-       m_spect(k,l)=  sum(v_sig(deb:fin) .* v_e(l, (1:max_len_fen)));
-   end
-   
+   m_tfct_sig(k,:) = fft(v_sig(deb:fin), Nfft);
 end
-for k=1:frames
-     m_spect(k,l)=  v_e(
+
+% application des filtres
+m_spect= zeros(frames, nb_note);
+
+disp('application filtre');
+for k= 1: frames
+    for l=1:nb_note
+       v_tmp= m_tfct_sig(k,:) .* v_e_freq(l,:);
+       m_spect(k,l)= m_spect(k,l) + sum(v_tmp);
+    end
 end
 
 m_spect= m_spect';
