@@ -8,21 +8,22 @@ clear all;
 plot(sig);
 freq_la_ref= 440;
 
-Q=10;
+Q=50;
 
-note_midi_min=45;
-note_midi_max= 104;
+% note_midi_min= 45;
+% note_midi_max= 92;
 
-% note_midi_min=21;
-% note_midi_max= 127;
+%TODO pourquoi bug en a 21 ?
+note_midi_min= 33; 
+note_midi_max= 116;
 
 spectrum= f_Q_transform2(sig, Fe, Q, note_midi_min, note_midi_max, freq_la_ref);
 
 figure;
-imagesc(abs(flipud(spectrum)));
+imagesc(spectrum);
 
-chroma= f_CQTtoChroma(abs(spectrum), note_midi_min);
-
-figure; 
-imagesc(chroma);
+% chroma= f_CQTtoChroma(abs(spectrum), note_midi_min);
+% 
+% figure; 
+% imagesc(chroma);
 
