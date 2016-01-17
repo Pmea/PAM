@@ -1,7 +1,7 @@
 function [m_spect]= f_Q_transform(v_sig, Fe, Q,note_min, note_max, freq_la_ref)
 
 % Varible
-Nfft= 2^15;
+Nfft= 2^17;
 
 v_len_sig= length(v_sig);
 
@@ -19,7 +19,7 @@ v_len_fen= floor((Q * Cw) ./ (v_f/Fe));  % la longeur de la fenetre pour chaque 
 max_len_fen= v_len_fen(1); 
 if mod(max_len_fen/2, 1) ~= 0
     max_len_fen= max_len_fen -1;
-    v_len_fen(k)= v_len_fen(k)- 1;
+    v_len_fen(1)= v_len_fen(1)- 1;
 end
 
 min_len_fen= v_len_fen(end);
@@ -62,6 +62,9 @@ for l=1:nb_note
 end
 
 %normalisation 
+for n=1:nb_chroma
+    m_e_freq(n,:)= m_e_freq(n, :) ./ sum(m_e_freq(n,:)); 
+end
 
 % creation de la tfct
  disp('calcule TFCT');
