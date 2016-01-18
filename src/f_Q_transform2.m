@@ -1,7 +1,7 @@
 function [m_spect]= f_Q_transform(v_sig, Fe, Q,note_min, note_max, freq_la_ref)
 
 % Varible
-Nfft= 2^15;
+Nfft= 2^17;
 
 v_len_sig= length(v_sig);
 
@@ -12,7 +12,7 @@ nb_note= note_max - note_min +1;
 
 v_mk= (note_min : note_max);  %les notes midi 
 v_f= freq_la_ref * 2.^((v_mk- 69)/12); % les frequences des differentes bandes
-v_f_red= v_f/Fe;  % inutile 
+v_f_red= v_f/Fe;  
 
 % Creation des longeurs des fenetres
 v_len_fen= floor((Q * Cw) ./ (v_f/Fe));  % la longeur de la fenetre pour chaque bande
@@ -46,32 +46,34 @@ disp(frames);         % affichage
 
 v_sig= v_sig'; % transposition du vecteur colone en vercteur ligne
 
-m_e= zeros(nb_note, max_len_fen);
-m_e_freq=  zeros(nb_note, Nfft);
-
 nb_chroma= 12;
 
-a= (1: ceil(max_len_fen/2))/Fe;
+m_e= zeros(nb_note, max_len_fen);
+m_e_freq=  zeros(nb_chroma, Nfft);
+
 disp('calcul filtre');
 for l=1:nb_note
-    v_demi_conus= cos(a .* v_f(l) .* 2 .*pi);
-    m_e(l,:)= [fliplr(v_demi_conus) v_demi_conus];   
-    m_e(l,:)= m_fen(l,:) .* m_e(l,:);
-    corres_chroma= mod(l + note_min -2,12)+1;
+    deb= 1 - ceil(max_len_fen/2);  % on centre le sinus dans le fenetre
+    fin= + floor(max_len_fen/2);   % pour avoir de bon resultat avec Q petit
+    m_e(l,:)= exp(-1j * 2 * pi * v_f_red(l) * (deb:fin));    
+    
+    m_e(l,:)= m_fen(l,:) .* real(m_e(l,:));
+    corres_chroma= mod(l + note_min -1,12)+1;
+    
     m_e_freq(corres_chroma,:)= m_e_freq(corres_chroma,:) + abs(fft(m_e(l,:), Nfft)); 
 end
 
-%normalisation 
-for n=1:nb_chroma
-    m_e_freq(n,:)= m_e_freq(n, :) ./ sum(m_e_freq(n,:)); 
-end
+%normalisation, normalement inutile 
+% for n=1:nb_chroma
+%     m_e_freq(n,:)= m_e_freq(n, :) ./ sum(m_e_freq(n,:)); 
+% end
 
 % creation de la tfct
  disp('calcule TFCT');
 m_tfct_sig= zeros(frames, Nfft);
 for k=1: frames
-   deb= k*hop + ceil(max_len_fen/2);
-   fin= k*hop + max_len_fen - 1 + ceil(max_len_fen/2);
+   deb= k*hop +max_len_fen/2 - ceil(max_len_fen/2) +1 - hop;
+   fin= k*hop +max_len_fen/2  + ceil(max_len_fen/2)- hop + 1;
    m_tfct_sig(k,:) = abs(fft(v_sig(deb:fin), Nfft));
 end
 
@@ -81,7 +83,7 @@ m_spect= zeros(frames, nb_chroma);
 disp('application filtre');
 for k= 1: frames
     for l=1:nb_chroma
-       v_tmp= m_tfct_sig(k,:) .* m_e_freq(l,:);
+       v_tmp= (m_tfct_sig(k,:) .* m_e_freq(l,:)) ./ max_len_fen;
        m_spect(k,l)= m_spect(k,l) + sum(v_tmp);
     end
 end

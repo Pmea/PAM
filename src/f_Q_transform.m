@@ -48,9 +48,9 @@ for l=1:nb_note
 end
 
 for k= 1: frames
-   deb= k*hop + ceil(max_len_fen/2);
-   fin= k*hop + max_len_fen - 1 + ceil(max_len_fen/2);
-
+   deb= k*hop +max_len_fen/2 - ceil(max_len_fen/2) +1 - hop;
+   fin= k*hop +max_len_fen/2  + ceil(max_len_fen/2)- hop + 1;
+   
    % compute de la CQT 
    for l=1:nb_note
        m_spect(k,l)=  sum(v_sig(deb:fin) .* v_e(l, (1:max_len_fen)));
