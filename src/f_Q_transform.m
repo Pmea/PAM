@@ -15,6 +15,10 @@ v_f_red= v_f/Fe;
 % Creation des longeurs des fenetres
 v_len_fen= floor((Q * Cw) ./ (v_f/Fe));  % la longeur de la fenetre pour chaque bande
 max_len_fen= v_len_fen(1); 
+if mod(max_len_fen/2, 1) ~= 0
+    max_len_fen= max_len_fen -1;
+    v_len_fen(1)= v_len_fen(1)- 1;
+end
 min_len_fen= v_len_fen(end);
 
 % Calcule des fenetres a partir des sinosoides

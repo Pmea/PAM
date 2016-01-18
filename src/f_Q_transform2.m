@@ -63,17 +63,12 @@ for l=1:nb_note
     m_e_freq(corres_chroma,:)= m_e_freq(corres_chroma,:) + abs(fft(m_e(l,:), Nfft)); 
 end
 
-%normalisation, normalement inutile 
-% for n=1:nb_chroma
-%     m_e_freq(n,:)= m_e_freq(n, :) ./ sum(m_e_freq(n,:)); 
-% end
-
 % creation de la tfct
  disp('calcule TFCT');
 m_tfct_sig= zeros(frames, Nfft);
 for k=1: frames
-   deb= k*hop +max_len_fen/2 - ceil(max_len_fen/2) +1 - hop;
-   fin= k*hop +max_len_fen/2  + ceil(max_len_fen/2)- hop + 1;
+   deb= k*hop + max_len_fen/2 - ceil(max_len_fen/2) +1 - hop;
+   fin= k*hop + max_len_fen/2  + ceil(max_len_fen/2)- hop + 1;
    m_tfct_sig(k,:) = abs(fft(v_sig(deb:fin), Nfft));
 end
 
