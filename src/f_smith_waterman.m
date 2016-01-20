@@ -7,6 +7,7 @@ len_B= length(chaineB);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
 c_antes= cell(len_A+1, len_B+1);   % au debut du mot
+
 c_antes{1,1}=[0 0];
 
 for k=1:len_B
