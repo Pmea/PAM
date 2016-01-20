@@ -4,8 +4,13 @@ function F0 = f_detect_F0(Xk,Nfft,H,Fs,Fmin,Fmax)
 Nmin = floor(Fmin/Fs*Nfft);
 Nmax = floor(Fmax/Fs*Nfft);
 
-Rmax = floor((Nfft-1)/2/H);
+if (Nfft-1)/2/H < Nmax
+    H = floor((Nfft-1)/2/Nmax);
+end
+
+Rmax = ceil((Nfft-1)/2/H);
 P = ones(Rmax,1);
+
 for h=1:H
     DecimXk = Xk(1:h:Nfft/2);
     P = P.*DecimXk(1:Rmax);
