@@ -14,7 +14,7 @@ gap= -1;  % ouverture et extension
 
 seuil= 9;
 
-[chemins, m_res, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap, seuil);
+[chemins, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap, seuil);
 
 disp('SCORE');
 disp(score);

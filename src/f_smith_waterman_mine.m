@@ -93,7 +93,7 @@ while  max_tmp > seuil
         chemin= [[max_x max_y]; chemin];
         
         % on met la case a 0
-        m_res(max_x, max_y)=0;
+        m_res(max_x, max_y)= 0;
     end
     
     chemins= [{chemin} chemins];
