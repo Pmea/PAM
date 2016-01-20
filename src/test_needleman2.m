@@ -13,6 +13,7 @@ m_sim= [1 -1 -1 -1 -1; -1 1 -1 -1 -1; -1 -1 1 -1 -1; -1 -1 -1 1 -1; -1 -1 -1 -1 
 
 open_gap= 0;  % ouverture et extension
 ext_gap= -1;
+
 [m_res, score]= f_needlenam2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap);
 
 disp('SCORE');

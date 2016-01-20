@@ -1,4 +1,4 @@
-function [chemins, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap, seuil)
+function [chemins, score]= f_smith_waterman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, seuil)
 
 %initialisation
 
@@ -7,6 +7,7 @@ len_B= length(chaineB);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
 c_antes= cell(len_A+1, len_B+1);   % au debut du mot
+
 c_antes{1,1}=[0 0];
 
 for k=1:len_B
@@ -21,11 +22,11 @@ for l=1:len_A
     c_antes{1,l+1}(2)= 0;
 end
 
+
 % calcule de la matrice
 
 for k=2:len_B+1
     for l=2:len_A+1
-        disp([k l]);
         ind_A=recheche_cor(chaineA(l-1), m_cor);
         ind_B=recheche_cor(chaineB(k-1), m_cor);
         
@@ -42,8 +43,8 @@ for k=2:len_B+1
              
         % pour les colones     
         for col=1:k-1
-            if (m_res(k-col, l) + (gap * col)) > max_tmp
-                max_tmp= (m_res(k-col, l) + (gap * col)); 
+            if (m_res(k-col, l) + (ext_gap * col)+ open_gap) > max_tmp
+                max_tmp= m_res(k-col, l) + (ext_gap * col) + open_gap; 
                 c_antes{k,l}(1)= k-col;
                 c_antes{k,l}(2)= l;
             end
@@ -51,8 +52,8 @@ for k=2:len_B+1
         
         % pour les lignes
         for ligne=1:l-1
-            if (m_res(k, l-ligne) + (gap * ligne)) > max_tmp
-                max_tmp= (m_res(k, l-ligne) + (gap * ligne));
+            if (m_res(k, l-ligne) + (ext_gap * ligne)+ open_gap) > max_tmp
+                max_tmp= m_res(k, l-ligne) + (ext_gap * ligne) + open_gap;
                 c_antes{k,l}(1)= k;
                 c_antes{k,l}(2)= l-ligne;
             end
@@ -65,7 +66,6 @@ end
 
 
 % calcule du resultat
-score= 1;
 chemins={};
 
 %similarité accumulé maximun
@@ -93,11 +93,18 @@ while  max_tmp > seuil
         chemin= [[max_x max_y]; chemin];
         
         % on met la case a 0
-        m_res(max_x, max_y)=0;
+        m_res(max_x, max_y)= 0;
     end
     
     chemins= [{chemin} chemins];
     max_tmp = max(max(m_res));
+end
+
+score= 0;
+for k=1:length(chemins)
+    if length(chemins{1,k}) > score
+        score= length(chemins{1,k});
+    end
 end
 
 end
