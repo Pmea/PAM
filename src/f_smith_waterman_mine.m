@@ -1,4 +1,4 @@
-function [m_res, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap)
+function [chemins, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap, seuil)
 
 %initialisation
 
@@ -6,22 +6,19 @@ len_A= length(chaineA);
 len_B= length(chaineB);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
-m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
-
-% pour la recheche d'antessedant on prend la convention gauche/diago/haut
-def_gau=1;  % define variable pour antessedant dans le tableau          
-def_dia=2;
-def_hau=3;
-def_ini=0;
+c_antes= cell(len_A+1, len_B+1);   % au debut du mot
+c_antes{1,1}=[0 0];
 
 for k=1:len_B
     m_res(k+1,1)= 0;
-    m_antes(k+1,1)= def_hau;
+    c_antes{k+1,1}(1)= 0;
+    c_antes{k+1,1}(2)= 0;
 end
 
 for l=1:len_A
     m_res(1,l+1)= 0;
-    m_antes(1,l+1)= def_gau;
+    c_antes{1,l+1}(1)= 0;
+    c_antes{1,l+1}(2)= 0;
 end
 
 % calcule de la matrice
@@ -32,40 +29,76 @@ for k=2:len_B+1
         ind_A=recheche_cor(chaineA(l-1), m_cor);
         ind_B=recheche_cor(chaineB(k-1), m_cor);
         
+        max_tmp= 0;
+        c_antes{k,l}(1)= 0;
+        c_antes{k,l}(2)= 0;
+         
         % pour la diagonal (match ou dismatch)
-        val_diago= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
-        % sauvegarde du prec ?
-        
-        % pour les colones
-        max_col= m_res(k-1, l) + gap * 1;
+        if m_res(k-1,l-1) + m_sim(ind_A, ind_B) > max_tmp
+            max_tmp= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
+            c_antes{k,l}(1)= k-1;
+            c_antes{k,l}(2)= l-1;
+        end
+             
+        % pour les colones     
         for col=1:k-1
-            if (m_res(k-col, l) + (gap * col)) > max_col
-                disp('colone !');
-                max_col= (m_res(k-col, l) + (gap * col)); 
-                % sauvegarde du prec ? 
+            if (m_res(k-col, l) + (gap * col)) > max_tmp
+                max_tmp= (m_res(k-col, l) + (gap * col)); 
+                c_antes{k,l}(1)= k-col;
+                c_antes{k,l}(2)= l;
             end
         end
         
         % pour les lignes
-        max_ligne= m_res(k,l-1) + gap * 1;        %on init a la prec du haut
         for ligne=1:l-1
-            if (m_res(k, l-ligne) + (gap * ligne)) > max_ligne
-                disp('ligne !');
-                max_ligne= (m_res(k, l-ligne) + (gap * ligne));
-                % sauvegarde du prec ?
+            if (m_res(k, l-ligne) + (gap * ligne)) > max_tmp
+                max_tmp= (m_res(k, l-ligne) + (gap * ligne));
+                c_antes{k,l}(1)= k;
+                c_antes{k,l}(2)= l-ligne;
             end
         end 
         
-        % selection du max
-        [m_res(k,l),~]= max([max_ligne val_diago max_col 0]);
-        
-        % savegarde du prec
-    end 
+        % selection du max, les antes sont deja sauvegarde
+        m_res(k,l)= max_tmp;
+    end
 end
 
 
 % calcule du resultat
 score= 1;
+chemins={};
+
+%similarité accumulé maximun
+
+max_tmp = max(max(m_res));
+
+while  max_tmp > seuil
+    [max_x, max_y]= find(m_res==max_tmp);
+    max_x= max_x(1);
+    max_y= max_y(1);
+    
+    
+    % on met la case a 0
+    m_res(max_x, max_y)=0;
+    
+    chemin= [max_x max_y];
+    
+    while c_antes{max_x, max_y}(1) >0 && c_antes{max_x, max_y}(2) > 0
+        tmp_x= c_antes{max_x, max_y}(1);
+        tmp_y= c_antes{max_x, max_y}(2);
+        
+        max_x=tmp_x;
+        max_y=tmp_y;
+        
+        chemin= [[max_x max_y]; chemin];
+        
+        % on met la case a 0
+        m_res(max_x, max_y)=0;
+    end
+    
+    chemins= [{chemin} chemins];
+    max_tmp = max(max(m_res));
+end
 
 end
 
