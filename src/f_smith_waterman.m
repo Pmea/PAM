@@ -1,170 +1,113 @@
+function [chemins, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap, seuil)
 
-function [cout_m]= f_smith_waterman(chaineA, chaineB, penality,gap)
-len_A= length(chaineA)+1;
-len_B= length(chaineB)+1;
-%penality ici fait office dans penality_m de mismatch
-verbose=1;
-plotAlignement=1;
+%initialisation
 
-penality_m=zeros(len_A,len_B);
-for i=1:len_A-1
-    for j=1:len_B-1
-        if chaineA(i)==chaineB(j)
-            penality_m(i+1,j+1)=2;
-        else
-            penality_m(i+1,j+1)=penality;
-        end
-    end
+len_A= length(chaineA);
+len_B= length(chaineB);
+
+m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
+c_antes= cell(len_A+1, len_B+1);   % au debut du mot
+c_antes{1,1}=[0 0];
+
+for k=1:len_B
+    m_res(k+1,1)= 0;
+    c_antes{k+1,1}(1)= 0;
+    c_antes{k+1,1}(2)= 0;
 end
-cout_m=zeros(len_A,len_B);
-ligne_pred_M=zeros(len_A,len_B);
-col_pred_M=zeros(len_A,len_B);
 
+for l=1:len_A
+    m_res(1,l+1)= 0;
+    c_antes{1,l+1}(1)= 0;
+    c_antes{1,l+1}(2)= 0;
+end
 
+% calcule de la matrice
 
-
-%penalty fera regle de gap
-cout_m=zeros(len_A,len_B);
-ligne_pred_M=zeros(len_A,len_B);
-col_pred_M=zeros(len_A,len_B);
-
-% debut remplissage des matrice 
-for i=2:len_A %pour chaque ligne la premiere ligne reste a zero 
-    for j=2:len_B %pour chaque colonne la premiere colonne reste a zero
-        temp_max=penality_m(i,j);
-        bestPredi=0;
-        bestPredj=0;
-    %    keyboard;
-        %  transition Diagonal
-        if cout_m(i-1,j-1)+ penality_m(i,j)>temp_max
-            temp_max=cout_m(i-1,j-1)+ penality_m(i,j);
-            bestPredi=i-1;
-            bestPredj=j-1;
-            disp('in1');
+for k=2:len_B+1
+    for l=2:len_A+1
+        disp([k l]);
+        ind_A=recheche_cor(chaineA(l-1), m_cor);
+        ind_B=recheche_cor(chaineB(k-1), m_cor);
+        
+        max_tmp= 0;
+        c_antes{k,l}(1)= 0;
+        c_antes{k,l}(2)= 0;
+         
+        % pour la diagonal (match ou dismatch)
+        if m_res(k-1,l-1) + m_sim(ind_A, ind_B) > max_tmp
+            max_tmp= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
+            c_antes{k,l}(1)= k-1;
+            c_antes{k,l}(2)= l-1;
         end
-      % keyboard;
-        % scan vertical: nodes (1,j),(2,j),...,(i-1,j)
-        for ligne=1:i-1
-            if cout_m(ligne,j)+((penality)*(i-ligne))>temp_max
-                temp_max=cout_m(ligne,j)+((penality)*(i-ligne)); % the second term is the penalty term for the vertical transition
-                bestPredi=ligne;
-                bestPredj=j;
-                  disp('in2'); 
+             
+        % pour les colones     
+        for col=1:k-1
+            if (m_res(k-col, l) + (gap * col)) > max_tmp
+                max_tmp= (m_res(k-col, l) + (gap * col)); 
+                c_antes{k,l}(1)= k-col;
+                c_antes{k,l}(2)= l;
             end
-%            keyboard;
-        end
-      %  keyboard;
-        % scan Horizontal : nodes (i,1),(i,2),...,(i,j-1)
-        for col=1:j-1
-            if cout_m(i,col)+((penality)*(j-col))>temp_max
-                temp_max= cout_m(i,col)+(penality*(j-col)); % the second term is the penalty term for the horizontal transition
-                bestPredi=i;
-                bestPredj=col;
-                  disp('in3'); 
-            end
-        end
-    %keyboard;
-        % Finished (i,j).There only remains to store the winner
-        if temp_max>0
-            cout_m(i,j)=temp_max;
-            ligne_pred_M(i,j)=bestPredi;
-            col_pred_M(i,j)=bestPredj;
-            disp('change');
-        end
-%      keyboard;
-    end
-end
-% fin start remplissage des matrice 
-
-
-maxv=max(max(cout_m)); %similarité accumulé maximun
-if maxv==0
-    bp=[];
-    return;
-end
-
-[xc,yc]=find(cout_m==maxv); % where maxv is located
-xc=xc(1); yc=yc(1); % in case of ties
-keyboard;
-% eo initialization
-
-% Backtracking
-bp=[xc yc];
-while xc>0 && yc>0
-    t_ligne=ligne_pred_M(xc,yc);
-    t_col=col_pred_M(xc,yc);
-    xc=t_ligne;
-    yc=t_col;
-    bp=[[xc yc];bp];
-end
-
-
-
-% fin backtracking
-
-bp(1,:)=[];
-bp=bp-1;
-keyboard;
-if verbose==1
-    % affiche alignement a l'écran (si verbose~=1 on saute)
-    clc
-    fprintf('Similarity = %5.2f\n\n',maxv);
-    if ischar(chaineA)
-        fprintf('%5c <-> %-5c (match)\n',chaineA(bp(1,1)),chaineB(bp(1,2)));
-    else
-        fprintf('%5d <-> %-5d (match)\n',chaineA(bp(1,1)),chaineB(bp(1,2)));        
-    end
-    for i=2:size(bp,1)
-        Ac=chaineA(bp(i,1));
-        Bc=chaineB(bp(i,2));        
-        if bp(i,1)==bp(i-1,1)+1 && bp(i,2)==bp(i-1,2)+1
-            if Ac==Bc
-                if ischar(chaineA)
-                    fprintf('%5c <-> %-5c (match)\n',Ac,Bc);
-                else
-                    fprintf('%5d <-> %-5d (match)\n',Ac,Bc);
-                end
-            else
-                if ischar(chaineA)
-                    fprintf('%5c <-> %-5c (replacement)\n',Ac,Bc);
-                else
-                    fprintf('%5d <-> %-5d (replacement)\n',Ac,Bc);
-                end
-            end
-            continue;
         end
         
-        if bp(i,2)==bp(i-1,2)
-            for k=bp(i-1,1)+1:bp(i,1)
-                if ischar(chaineA)
-                    fprintf('%5c  <- %-5c (deleted)\n',chaineA(k),' ');
-                else
-                    fprintf('%5d  <- %-5c (deleted)\n',chaineA(k),' ');
-                end
+        % pour les lignes
+        for ligne=1:l-1
+            if (m_res(k, l-ligne) + (gap * ligne)) > max_tmp
+                max_tmp= (m_res(k, l-ligne) + (gap * ligne));
+                c_antes{k,l}(1)= k;
+                c_antes{k,l}(2)= l-ligne;
             end
-            continue;
-        end
+        end 
         
-        if bp(i,1)==bp(i-1,1)
-            for k=bp(i-1,2)+1:bp(i,2)
-                if ischar(chaineA)
-                    fprintf('%5c  -> %-5c (deleted)\n',' ',chaineB(k));
-                else
-                    fprintf('%5c  -> %-5d (deleted)\n',' ',chaineB(k));
-                end
-            end
-        end
+        % selection du max, les antes sont deja sauvegarde
+        m_res(k,l)= max_tmp;
     end
-    % end print
 end
 
-if plotAlignement==1
-    % Plot Alignment avec graphics (peut etre sauté)
-    clf;hold;
-    axis([1 length(chaineB) 1 length(chaineA)]);
-    plot(bp(:,2),bp(:,1),'r*');
-    plot(bp(:,2),bp(:,1));
-    grid on
-    % end plot
+
+% calcule du resultat
+score= 1;
+chemins={};
+
+%similarité accumulé maximun
+
+max_tmp = max(max(m_res));
+
+while  max_tmp > seuil
+    [max_x, max_y]= find(m_res==max_tmp);
+    max_x= max_x(1);
+    max_y= max_y(1);
+    
+    
+    % on met la case a 0
+    m_res(max_x, max_y)=0;
+    
+    chemin= [max_x max_y];
+    
+    while c_antes{max_x, max_y}(1) >0 && c_antes{max_x, max_y}(2) > 0
+        tmp_x= c_antes{max_x, max_y}(1);
+        tmp_y= c_antes{max_x, max_y}(2);
+        
+        max_x=tmp_x;
+        max_y=tmp_y;
+        
+        chemin= [[max_x max_y]; chemin];
+        
+        % on met la case a 0
+        m_res(max_x, max_y)= 0;
+    end
+    
+    chemins= [{chemin} chemins];
+    max_tmp = max(max(m_res));
 end
-keyboard;
+
+end
+
+function indice = recheche_cor (car, m_cor)
+%retourne l'indice du caractere dans la matrice de similarite
+%a l'aide de la matrice de correspondance
+    for k=1: size(m_cor,1)
+        if m_cor(k,1) == car
+            indice = k;
+        end
+    end
+end
