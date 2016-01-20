@@ -65,7 +65,6 @@ end
 
 
 % calcule du resultat
-score= 1;
 chemins={};
 
 %similarité accumulé maximun
@@ -98,6 +97,13 @@ while  max_tmp > seuil
     
     chemins= [{chemin} chemins];
     max_tmp = max(max(m_res));
+end
+
+score= 0;
+for k=1:length(chemins)
+    if length(chemins{1,k}) > score
+        score= length(chemins{1,k});
+    end
 end
 
 end
