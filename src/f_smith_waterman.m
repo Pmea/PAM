@@ -1,4 +1,4 @@
-function [chemins, score]= f_smith_waterman_mine(chaineA, chaineB, m_sim, m_cor, gap, seuil)
+function [chemins, score]= f_smith_waterman(chaineA, chaineB, m_sim, m_cor, gap, seuil)
 
 %initialisation
 
@@ -26,7 +26,6 @@ end
 
 for k=2:len_B+1
     for l=2:len_A+1
-        disp([k l]);
         ind_A=recheche_cor(chaineA(l-1), m_cor);
         ind_B=recheche_cor(chaineB(k-1), m_cor);
         
