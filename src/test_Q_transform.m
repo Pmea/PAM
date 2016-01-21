@@ -10,8 +10,8 @@ freq_la_ref= 440;
 
 Q=20;
 
-note_midi_min=45;
-note_midi_max= 104;
+note_midi_min=33;
+note_midi_max= 92;
 
 spectrum= f_Q_transform(sig, Fe, Q, note_midi_min, note_midi_max, freq_la_ref);
 
