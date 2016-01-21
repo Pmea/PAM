@@ -11,7 +11,7 @@ m_cor= ['A1'; 'G2'; 'C3'; 'T4'];
 m_sim= [2 -1 -1 -1; -1 2 -1 -1 ; -1 -1 2 -1; -1 -1 -1 2];
 
 open_gap= -1;  % ouverture et extension
-ext_gap= 0;
+ext_gap= 0; 
 
 seuil= 9;
 
