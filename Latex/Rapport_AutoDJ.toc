@@ -1,0 +1,15 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Introduction}{3}
+\contentsline {section}{\numberline {2}Alignement des accords}{3}
+\contentsline {subsection}{\numberline {2.1}Accord}{3}
+\contentsline {subsubsection}{\numberline {2.1.1}Matrice de similarité}{3}
+\contentsline {subsection}{\numberline {2.2}Algorithme de Needleman-Wunsch}{3}
+\contentsline {subsubsection}{\numberline {2.2.1}Presentation de l'algorithme}{3}
+\contentsline {subsection}{\numberline {2.3}Smith-Waterman}{4}
+\contentsline {subsubsection}{\numberline {2.3.1}Presentation de l'algorithme}{4}
+\contentsline {subsection}{\numberline {2.4}Affine GAP Cost}{4}
+\contentsline {section}{\numberline {3}Transformer Q-constante (CQT)}{4}
+\contentsline {subsection}{\numberline {3.1}CQT classique}{5}
+\contentsline {subsection}{\numberline {3.2}CQT efficiente}{5}
+\contentsline {section}{\numberline {4}Tracking de beat}{6}
+\contentsline {section}{\numberline {5}Detune}{7}
