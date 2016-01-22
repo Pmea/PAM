@@ -49,14 +49,16 @@ end
 
 k=len_A+1;
 l=len_B+1;
-score=1;    %initialisation du score
+
+score=0;    %initialisation du score
 
 chemin= [];
 
 while  m_antes(k,l) ~= def_ini
     chemin= [[k l]; chemin];    
     
-    score= score + 1 ;    
+    score= score + m_res(k,l);
+    disp(score);
     switch m_antes(k,l)
         case def_gau
             l= l-1;
@@ -70,8 +72,8 @@ while  m_antes(k,l) ~= def_ini
             assert(true);
     end
 end
-
 chemin= [[1 1]; chemin];
+score= score + m_res(k,l);      
 
 end
 

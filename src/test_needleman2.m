@@ -3,22 +3,22 @@ close all;
 clear all;
 
 chaineA=[
-        'G  ';
-        'C  ';
         'A  ';
+        'C  ';
         'T  ';
-        'G  ';
+        'T  ';
+        'A  ';
        % 'C  ';
        % 'U  ';
         ];
         
 chaineB=[
-        'G  ';
+        'A  ';
         'A  ';
         'T  ';
         'T  ';
         'A  ';
-        'C  ';
+        'A  ';
        % 'A  ';
         ];
 

@@ -83,7 +83,7 @@ end
 % calcule du resultat
 k=len_A+1;
 l=len_B+1;
-score= 1;    %initialisation du score
+score= 0;    %initialisation du score
 
 [~, ind_a]= max([m_Lx(k,l) m_res(k,l) m_Ly(k,l) ]);
 
@@ -100,30 +100,37 @@ switch ind_a
 end
 
 chemin= [];
+score= score + m_res(k,l);
 
 while  m_antes(k,l) ~= def_init
 
     chemin= [[k l]; chemin];
-
-    score= score + 1 ;       
+  
     switch m_antes(k,l)
         case def_ant_res
             k= k-1;
             l= l-1;
             m_antes=m_antes_res;
+            score= score + m_res(k,l); 
+            disp('Res');
         case def_ant_Lx
             k=k-1;
             m_antes=m_antes_Lx;
+            score= score + m_res(k,l);   
+            disp('Lx');
         case def_ant_Ly
             l= l-1;
             m_antes=m_antes_Ly;
+            score= score + m_res(k,l);
+            disp('Ly');
+
         otherwise
             disp('Erreur valeur de l''antessedant');
             assert(true);
     end
 end
 chemin= [[1 1]; chemin];
-
+score= score + m_res(k,l);
 
 end
 
