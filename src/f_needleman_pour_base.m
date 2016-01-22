@@ -20,24 +20,24 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
             c_mor{ref}.needlemanAccords(etu)= score;
             c_mor{etu}.needlemanAccords(ref)= score;
             
-            % application de needleman avec intervals
-            [~, score]=  f_needleman2(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap);
-            c_mor{ref}.needlemanInterval(etu)= score;
-            c_mor{etu}.needlemanInterval(ref)= score;
-            
-            % application de waterman avec accords
-            [chemin, score]= f_smith_waterman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap, nb_seq);
-            c_mor{ref}.watermanAccords{etu}.score= score;
-            c_mor{ref}.watermanAccords{etu}.chemin= chemin;
-            c_mor{etu}.watermanAccords{ref}.score= score; 
-            c_mor{etu}.watermanAccords{ref}.chemin= chemin;
-            
-            % application de waterman avec intervals
-            [chemin, score]= f_smith_waterman2(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap,  nb_seq);             
-            c_mor{ref}.watermanInterval{etu}.score= score;
-            c_mor{ref}.watermanInterval{etu}.chemin= chemin;
-            c_mor{etu}.watermanInterval{ref}.scrore= score;
-            c_mor{etu}.watermanInterval{ref}.chemin= chemin;
+%             % application de needleman avec intervals
+%             [~, score]=  f_needleman2(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap);
+%             c_mor{ref}.needlemanInterval(etu)= score;
+%             c_mor{etu}.needlemanInterval(ref)= score;
+%             
+%             % application de waterman avec accords
+%             [chemin, score]= f_smith_waterman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap, nb_seq);
+%             c_mor{ref}.watermanAccords{etu}.score= score;
+%             c_mor{ref}.watermanAccords{etu}.chemin= chemin;
+%             c_mor{etu}.watermanAccords{ref}.score= score; 
+%             c_mor{etu}.watermanAccords{ref}.chemin= chemin;
+%             
+%             % application de waterman avec intervals
+%             [chemin, score]= f_smith_waterman2(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap,  nb_seq);             
+%             c_mor{ref}.watermanInterval{etu}.score= score;
+%             c_mor{ref}.watermanInterval{etu}.chemin= chemin;
+%             c_mor{etu}.watermanInterval{ref}.scrore= score;
+%             c_mor{etu}.watermanInterval{ref}.chemin= chemin;
 
         end
     end
