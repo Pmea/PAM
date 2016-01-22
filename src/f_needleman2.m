@@ -7,8 +7,8 @@ function [m_res, score]= f_needleman2(chaineA, chaineB, m_sim, m_cor, open_gap, 
 
 %initialisation
 
-len_A= length(chaineA);     % changer tout les length par des size
-len_B= length(chaineB);
+len_A= size(chaineA,1);     % changer tout les length par des size
+len_B= size(chaineB,1);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
 m_Lx= zeros(len_A+1, len_B+1);
@@ -53,7 +53,7 @@ m_antes_res(1,1)= def_init;
 
 for k=2:len_B+1
     for l=2:len_A+1
-        
+        disp([k,l])
         % pour Ly
         val_open_Ly= m_res(k, l-1) + ext_gap + open_gap;
         val_ext_Ly=  m_Ly(k, l-1) + ext_gap;
