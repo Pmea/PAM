@@ -26,8 +26,8 @@ end
 
 for k=2:len_B+1
     for l=2:len_A+1
-        ind_A=recheche_cor(chaineA(l-1), m_cor);
-        ind_B=recheche_cor(chaineB(k-1), m_cor);
+        ind_A=recheche_cor(chaineA(l-1, 1:3), m_cor);
+        ind_B=recheche_cor(chaineB(k-1, 1:3), m_cor);
         
         max_tmp= 0;
         c_antes{k,l}(1)= 0;
@@ -108,11 +108,11 @@ end
 
 end
 
-function indice = recheche_cor (car, m_cor)
+function indice = recheche_cor (s, m_cor)
 %retourne l'indice du caractere dans la matrice de similarite
 %a l'aide de la matrice de correspondance
     for k=1: size(m_cor,1)
-        if m_cor(k,1) == car
+        if strcmp(m_cor(k,1:3), s);
             indice = k;
         end
     end
