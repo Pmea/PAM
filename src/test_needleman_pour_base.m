@@ -59,52 +59,55 @@ c_morceaux= cell(1,nb_morceaux);
 % premier
 c_morceaux{1}.nom='piste1.wav';
 c_morceaux{1}.accords=['C  ';
-%                       'C  ';
-%                        'Db ';
-%                        'C  ';
-%                        'C  ';
-%                        'Db ';
-%                        'C  ';
-%                        'C  ';
-%                        'Db ';
-%                        'C  ';
-%                        'C  ';
+                      'C  ';
+                       'Db ';
+                       'C  ';
+                       'C  ';
+                       'Db ';
+                       'C  ';
+                       'C  ';
+                       'Db ';
+                       'C  ';
+                       'C  ';
                        'Db ']; 
 c_morceaux{1}.needlemanInterval= zeros(1,nb_morceaux) -Inf;                   
+c_morceaux{1}.needlemanAccords= zeros(1,nb_morceaux) -Inf;                   
                                  
 % second
 
 c_morceaux{2}.nom='piste2.wav';
 c_morceaux{2}.accords=['Db ';
-%                       'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'Db ';
+                      'Db ';
+                       'D  ';
+                       'Db ';
+                       'Db ';
+                       'D  ';
+                       'Db ';
+                       'Db ';
+                       'D  ';
+                       'Db ';
+                       'Db ';
                        'D  ']; 
-c_morceaux{2}.needlemanInterval= zeros(1,nb_morceaux) -Inf;                   
+c_morceaux{2}.needlemanIntervals= zeros(1,nb_morceaux) -Inf;                   
+c_morceaux{2}.needlemanAccords= zeros(1,nb_morceaux) -Inf;                   
 
 
 % troisieme
 c_morceaux{3}.nom='piste3.wav';
 c_morceaux{3}.accords=['C  ';
-%                       'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'C  ';
-%                        'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'C  ';
-%                        'Db ';
-%                        'D  ';
+                      'Db ';
+                       'D  ';
+                       'Db ';
+                       'C  ';
+                       'Db ';
+                       'D  ';
+                       'Db ';
+                       'C  ';
+                       'Db ';
+                       'D  ';
                        'Db ']; 
-c_morceaux{3}.needlemanInterval= zeros(1,nb_morceaux) -Inf;                   
+c_morceaux{3}.needlemanIntervals= zeros(1,nb_morceaux) -Inf;                   
+c_morceaux{3}.needlemanAccords= zeros(1,nb_morceaux) -Inf;                   
 
 
 % application de la fonction

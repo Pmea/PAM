@@ -1,4 +1,4 @@
-function [m_res, score]= f_needleman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap)
+function [chemin, score]= f_needleman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap)
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -7,7 +7,7 @@ function [m_res, score]= f_needleman2(chaineA, chaineB, m_sim, m_cor, open_gap, 
 
 %initialisation
 
-len_A= size(chaineA,1);     % changer tout les length par des size
+len_A= size(chaineA,1);   
 len_B= size(chaineB,1);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
@@ -53,7 +53,6 @@ m_antes_res(1,1)= def_init;
 
 for k=2:len_B+1
     for l=2:len_A+1
-        disp([k,l])
         % pour Ly
         val_open_Ly= m_res(k, l-1) + ext_gap + open_gap;
         val_ext_Ly=  m_Ly(k, l-1) + ext_gap;
@@ -97,7 +96,12 @@ switch ind_a
        assert(true);
 end
 
+chemin= [];
+
 while  m_antes(k,l) ~= def_init
+
+    chemin= [[k l]; chemin];
+
     score= score + 1 ;       
     switch m_antes(k,l)
         case def_ant_res
@@ -115,6 +119,8 @@ while  m_antes(k,l) ~= def_init
             assert(true);
     end
 end
+chemin= [[1 1]; chemin];
+
 
 end
 

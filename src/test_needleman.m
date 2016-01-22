@@ -43,9 +43,9 @@ m_sim= [1 -1 -1 -1 -1;
 
 gap= -1;  % ouverture et extension
 
-[m_res, score]= f_needleman(chaineA, chaineB, m_sim, m_cor, gap);
+[chemin, score]= f_needleman(chaineA, chaineB, m_sim, m_cor, gap);
 
 disp('SCORE');
 disp(score);
-figure;
-imagesc(m_res);
+
+disp(chemin);

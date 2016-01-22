@@ -1,4 +1,4 @@
-function [m_res, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap)
+function [chemin, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap)
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -7,8 +7,8 @@ function [m_res, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap)
 
 %initialisation
 
-len_A= length(chaineA);
-len_B= length(chaineB);
+len_A= size(chaineA,1);   
+len_B= size(chaineB,1);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
 m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
@@ -51,7 +51,11 @@ l=len_A+1;
 k=len_B+1;
 score=1;    %initialisation du score
 
+chemin= [];
+
 while  m_antes(k,l) ~= def_ini
+    chemin= [[k l]; chemin];    
+    
     score= score + 1 ;    
     switch m_antes(k,l)
         case def_gau
@@ -67,6 +71,7 @@ while  m_antes(k,l) ~= def_ini
     end
 end
 
+chemin= [[1 1]; chemin];
 
 end
 
