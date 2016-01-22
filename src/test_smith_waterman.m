@@ -35,9 +35,9 @@ m_sim=  [2 -1 -1 -1;
 
 gap= -1;  % ouverture et extension
 
-seuil= 9;
+nb_match= 1;
 
-[chemins, score]= f_smith_waterman(chaineA, chaineB, m_sim, m_cor, gap, seuil);
+[chemins, score]= f_smith_waterman(chaineA, chaineB, m_sim, m_cor, gap, nb_match);
 
 disp('SCORE');
 disp(score);

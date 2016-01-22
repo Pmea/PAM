@@ -1,4 +1,4 @@
-function [chemins, score]= f_smith_waterman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, seuil)
+function [chemins, score]= f_smith_waterman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
 
 %initialisation
 
@@ -66,13 +66,16 @@ end
 
 
 % calcule du resultat
-chemins={};
+chemins=[];
 
 %similarité accumulé maximun
 
-max_tmp = max(max(m_res));
 
-while  max_tmp > seuil
+for n=1:nb_match
+%     figure;
+%     imagesc(m_res);
+    
+    max_tmp = max(max(m_res));
     [max_x, max_y]= find(m_res==max_tmp);
     max_x= max_x(1);
     max_y= max_y(1);
@@ -97,12 +100,11 @@ while  max_tmp > seuil
     end
     
     chemins= [{chemin} chemins];
-    max_tmp = max(max(m_res));
 end
 
 score= 0;
-for k=1:length(chemins)
-    if length(chemins{1,k}) > score
+for k=1:length(chemins)                 % en theorie le premier chemin trouve
+    if length(chemins{1,k}) > score     % et le chemin le plus long
         score= length(chemins{1,k});
     end
 end
