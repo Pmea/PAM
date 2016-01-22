@@ -80,7 +80,9 @@ for n=1:nb_match
     max_x= max_x(1);
     max_y= max_y(1);
     
-    
+    if n == 1
+        score= max_tmp;
+    end
     % on met la case a 0
     m_res(max_x, max_y)=0;
     
@@ -100,13 +102,6 @@ for n=1:nb_match
     end
     
     chemins= [{chemin} chemins];
-end
-
-score= 0;
-for k=1:length(chemins)                 % en theorie le premier chemin trouve
-    if length(chemins{1,k}) > score     % et le chemin le plus long
-        score= length(chemins{1,k});
-    end
 end
 
 end
