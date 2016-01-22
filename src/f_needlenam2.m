@@ -65,8 +65,8 @@ for k=2:len_B+1
         [m_Lx(k,l), m_antes_Lx(k,l) ]= max([val_ext_Lx val_open_Lx -Inf]);
         
         % pour res
-        ind_A=recheche_cor(chaineA(l-1), m_cor);
-        ind_B=recheche_cor(chaineB(k-1), m_cor);
+        ind_A=recheche_cor(chaineA(l-1, 1:3), m_cor);
+        ind_B=recheche_cor(chaineB(k-1, 1:3), m_cor);
         delta= m_sim(ind_A, ind_B);
         
         %calcule du match pour les trois
@@ -121,11 +121,11 @@ end
 
 
 
-function indice = recheche_cor (car, m_cor)
+function indice = recheche_cor (s, m_cor)
 %retourne l'indice du caractere dans la matrice de similarite
 %a l'aide de la matrice de correspondance
     for k=1: size(m_cor,1)
-        if m_cor(k,1) == car
+        if strcmp(m_cor(k,1:3), s);
             indice = k;
         end
     end
