@@ -4,6 +4,8 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
     ext_gap= -0.5;        % a determiner precisement
     open_gap= -1;
     [m_penalty, m_cor]= f_creer_penalty_et_corres_dist(c_chroma_ref);
+    m_penalty_inter= zeros(12) -10;
+    m_penalty_inter= m_penalty_inter + diag(ones(1,12)) * 20;
     nb_seq=1;
     
     for ref=1:size(c_mor, 2)          % Le parcours de la base
@@ -21,9 +23,9 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
             c_mor{etu}.needlemanAccords(ref)= score;
             
             % application de needleman avec intervals
-%             [~, score]=  f_needleman2(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap);
-%             c_mor{ref}.needlemanInterval(etu)= score;
-%             c_mor{etu}.needlemanInterval(ref)= score;
+             [~, score]=  f_needleman2_Interval(chaine_ref_inter, chaine_etu_inter, m_penalty_inter, open_gap, ext_gap);
+             c_mor{ref}.needlemanInterval(etu)= score;
+             c_mor{etu}.needlemanInterval(ref)= score;
             
             % application de waterman avec accords
             [chemin, score]= f_smith_waterman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap, nb_seq);

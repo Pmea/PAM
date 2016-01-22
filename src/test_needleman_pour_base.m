@@ -5,7 +5,7 @@ clear all;
 % creation fausse matrice de chroma 
 c_chroma_ref= cell(1,3);
 chroma1= [                                          %donnee piano reel
-    129.0964;
+   129.0964;
     9.8799;
     1.7967;
     1.0914;

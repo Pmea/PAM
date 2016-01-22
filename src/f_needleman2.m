@@ -112,18 +112,14 @@ while  m_antes(k,l) ~= def_init
             l= l-1;
             m_antes=m_antes_res;
             score= score + m_res(k,l); 
-            disp('Res');
         case def_ant_Lx
             k=k-1;
             m_antes=m_antes_Lx;
             score= score + m_res(k,l);   
-            disp('Lx');
         case def_ant_Ly
             l= l-1;
             m_antes=m_antes_Ly;
             score= score + m_res(k,l);
-            disp('Ly');
-
         otherwise
             disp('Erreur valeur de l''antessedant');
             assert(true);
