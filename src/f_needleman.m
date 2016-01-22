@@ -19,24 +19,24 @@ def_dia=2;
 def_hau=3;
 def_ini=0;
 
-for k=1:len_B
+for k=1:len_A
     m_res(k+1,1)= gap * k;
     m_antes(k+1,1)= def_hau;
 end
 
-for l=1:len_A
+for l=1:len_B
     m_res(1,l+1)= gap * l;
     m_antes(1,l+1)= def_gau;
 end
 
 % calcule de la matrice
-for k=2:len_B+1
-    for l=2:len_A+1
+for l=2:len_B+1
+    for k=2:len_A+1
         val_haut= m_res(k-1, l) + gap;
         val_gauche= m_res(k, l-1) + gap;
         
-        ind_A=recheche_cor(chaineA(l-1, 1:3), m_cor);
-        ind_B=recheche_cor(chaineB(k-1, 1:3), m_cor);
+        ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
+        ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         
         val_diago= m_res(k-1,l-1) + m_sim(ind_A, ind_B);
         
@@ -47,8 +47,8 @@ for k=2:len_B+1
 end
 % calcule du resultat
 
-l=len_A+1;
-k=len_B+1;
+k=len_A+1;
+l=len_B+1;
 score=1;    %initialisation du score
 
 chemin= [];
