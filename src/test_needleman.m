@@ -43,7 +43,7 @@ m_sim= [1 -1 -1 -1 -1;
 
 gap= -1;  % ouverture et extension
 
-[m_res, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap);
+[m_res, score]= f_needleman(chaineA, chaineB, m_sim, m_cor, gap);
 
 disp('SCORE');
 disp(score);
