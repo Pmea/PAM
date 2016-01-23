@@ -1,24 +1,25 @@
 % script de test de l'algo de smith_waterman
 close all;
 clear all;
-
-chaineA=['A  ';
+chaineA=[
+        'G  ';
         'C  ';
-        'A  ';
+        'G  ';
+        'G  ';
         'C  ';
-        'A  ';
         'C  ';
-        'T  ';
-        'A  '];
+        'G  ';
+        ];
         
-chaineB=['A  ';
-         'G  ';
-         'C  ';
-         'A  ';
-         'C  ';
-         'A  ';
-         'C  ';
-         'A  '];
+chaineB=[
+        'G  ';
+        'C  ';
+        'G  ';
+        'G  ';
+        'C  ';
+        'C  ';
+        'G  ';
+        ];
 
 % definition de l'alphabet
 % l'ordre: A G C T
