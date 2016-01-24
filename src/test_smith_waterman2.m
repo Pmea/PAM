@@ -8,7 +8,7 @@ chaineA=['A  ';
         'C  ';
         'A  ';
         'C  ';
-        'T  ';
+    %    'T  ';
         'A  '];
         
 chaineB=['A  ';

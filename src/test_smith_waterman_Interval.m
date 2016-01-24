@@ -6,8 +6,8 @@ chaineA=[
         'C  ';
         'G  ';
         'G  ';
-        'C  ';
-        'C  ';
+  %      'C  ';
+  %      'C  ';
         'G  ';
         ];
         
@@ -18,7 +18,7 @@ chaineB=[
         'G  ';
         'C  ';
         'C  ';
-       % 'G  ';
+        'G  ';
         ];
 
 % definition de l'alphabet
