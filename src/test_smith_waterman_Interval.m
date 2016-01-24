@@ -18,7 +18,7 @@ chaineB=[
         'G  ';
         'C  ';
         'C  ';
-        'G  ';
+       % 'G  ';
         ];
 
 % definition de l'alphabet

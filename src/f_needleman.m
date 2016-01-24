@@ -15,7 +15,7 @@ m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
 
 % pour la recheche d'antessedant on prend la convention gauche/diago/haut
 def_gau=1;  % define variable pour antessedant dans le tableau          
-def_dia=2;
+def_dia=2; 
 def_hau=3;
 def_ini=0;
 
