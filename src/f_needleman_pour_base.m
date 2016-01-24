@@ -9,7 +9,7 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
     nb_seq=1;
     
     for ref=1:size(c_mor, 2)          % Le parcours de la base
-        for etu=ref:size(c_mor, 2)
+        for etu=1:size(c_mor, 2)
             % recuperation des chaines
             chaine_ref= c_mor{ref}.accords;
             chaine_ref_inter= f_AccordtoInterval(chaine_ref);
@@ -20,28 +20,31 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
             % application de needleman avec accords  
             [~, score]=  f_needleman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap);
             c_mor{ref}.needlemanAccords(etu)= score;
-            c_mor{etu}.needlemanAccords(ref)= score;
-            
+            disp([chaine_ref'; chaine_etu']);
+            disp([ref etu score]);
             % application de needleman avec intervals
              [~, score]=  f_needleman2_Interval(chaine_ref_inter, chaine_etu_inter, m_penalty_inter, open_gap, ext_gap);
              c_mor{ref}.needlemanInterval(etu)= score;
-             c_mor{etu}.needlemanInterval(ref)= score;
             
             % application de waterman avec accords
             [chemin, score]= f_smith_waterman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap, nb_seq);
             c_mor{ref}.watermanAccords{etu}.score= score;
             c_mor{ref}.watermanAccords{etu}.chemin= chemin;
-            c_mor{etu}.watermanAccords{ref}.score= score; 
-            c_mor{etu}.watermanAccords{ref}.chemin= chemin;
-%             
-%             % application de waterman avec intervals
-%             [chemin, score]= f_smith_waterman2(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap,  nb_seq);             
-%             c_mor{ref}.watermanInterval{etu}.score= score;
-%             c_mor{ref}.watermanInterval{etu}.chemin= chemin;
-%             c_mor{etu}.watermanInterval{ref}.scrore= score;
-%             c_mor{etu}.watermanInterval{ref}.chemin= chemin;
+            
+            % application de waterman avec intervals
+            [chemin, score]= f_smith_waterman_Interval(chaine_ref_inter, chaine_etu_inter, m_penalty, m_cor, open_gap, ext_gap,  nb_seq);             
+            c_mor{ref}.watermanInterval{etu}.score= score;
+            c_mor{ref}.watermanInterval{etu}.chemin= chemin;
 
         end
     end
-
+    % affichage avec needleman
+    dist= zeros(size(c_mor, 2));
+    for k=1:size(c_mor, 2)          % pour tous les morceaux
+        dist(k,:)= c_mor{k}.needlemanAccords;
+    end
+    
+    Y = mdscale(dist,2);
+    scatter(Y(:, 1), Y(:, 2))
+    
 end

@@ -70,7 +70,12 @@ for k=2:len_A+1
         ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
         ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         delta= m_sim(ind_A, ind_B);
-        
+%         if k == l
+%             disp([k l]);
+%             disp([chaineA(k) chaineB(l)]);
+%             disp([ind_A ind_B]);
+%             disp([m_sim(ind_A, ind_B)]);
+%         end
         %calcule du match pour les trois
         val_Lx= m_Lx(k-1, l-1) + delta; 
         val_Ly= m_Ly(k-1, l-1) + delta;

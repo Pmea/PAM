@@ -56,10 +56,10 @@ for k=1:size(m_corres,1)
         m_penalty(l,k)= val_tmp;
     end
 end
-
-moyenne=mean(m_penalty(:));
-m_penalty= m_penalty - moyenne;
-m_penalty= -m_penalty;
+% 
+% moyenne=mean(m_penalty(:));
+% m_penalty= m_penalty - moyenne;
+ m_penalty= -m_penalty;
 
 end
 
