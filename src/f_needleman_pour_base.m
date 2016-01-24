@@ -20,8 +20,8 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
             % application de needleman avec accords  
             [~, score]=  f_needleman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap);
             c_mor{ref}.needlemanAccords(etu)= score;
-            disp([chaine_ref'; chaine_etu']);
-            disp([ref etu score]);
+ %          disp([chaine_ref'; chaine_etu']);
+ %          disp([ref etu score]);
             % application de needleman avec intervals
              [~, score]=  f_needleman2_Interval(chaine_ref_inter, chaine_etu_inter, m_penalty_inter, open_gap, ext_gap);
              c_mor{ref}.needlemanInterval(etu)= score;
@@ -41,10 +41,23 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
     % affichage avec needleman
     dist= zeros(size(c_mor, 2));
     for k=1:size(c_mor, 2)          % pour tous les morceaux
-        dist(k,:)= c_mor{k}.needlemanAccords;
+        dist(k,:)= - c_mor{k}.needlemanAccords;
     end
     
-    Y = mdscale(dist,2);
-    scatter(Y(:, 1), Y(:, 2))
+    D=[];
+    for k=1:size(c_mor,2)
+        for l=k+1:size(c_mor,2)
+            D=[D dist(k,l)];
+        end
+    end
     
+    Y = mdscale(D,2);
+    figure;
+    title('Affichage');
+    axis([min(min(Y)) max(max(Y)) min(min(Y)) max(max(Y))]);
+    hold on;
+    for k=1:size(c_mor,2)
+        scatter(Y(k, 1), Y(k, 2), 'filled');
+    end
+    hold off;
 end

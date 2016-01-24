@@ -85,18 +85,31 @@ c_morceaux{1}.needlemanAccords= zeros(1,nb_morceaux) -Inf;
 % second
 
 c_morceaux{2}.nom='piste2.wav';
-c_morceaux{2}.accords=['Db ';
-                      'Db ';
-                       'D  ';
+c_morceaux{2}.accords=['C  ';
+                       'C  ';
                        'Db ';
+                       'C  ';
+                       'C  ';
                        'Db ';
-                       'D  ';
+                       'A  ';
+                       'C  ';
                        'Db ';
-                       'Db ';
-                       'D  ';
-                       'Db ';
-                       'Db ';
-                       'D  ']; 
+                       'C  ';
+                       'C  ';
+                       'Db ']; 
+                   
+% c_morceaux{2}.accords=['Db ';
+%                        'Db ';
+%                        'D  ';
+%                        'Db ';
+%                        'Db ';
+%                        'D  ';
+%                        'Db ';
+%                        'Db ';
+%                        'D  ';
+%                        'Db ';
+%                        'Db ';
+%                        'D  ']; 
 c_morceaux{2}.needlemanIntervals= zeros(1,nb_morceaux) -Inf;                   
 c_morceaux{2}.needlemanAccords= zeros(1,nb_morceaux) -Inf;                   
 
