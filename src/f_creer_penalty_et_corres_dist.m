@@ -59,7 +59,7 @@ end
 % 
 % moyenne=mean(m_penalty(:));
 % m_penalty= m_penalty - moyenne;
- m_penalty= -m_penalty;
+m_penalty= -m_penalty;
 
 end
 

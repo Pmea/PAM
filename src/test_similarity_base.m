@@ -134,6 +134,6 @@ c_morceaux{3}.needlemanAccords= zeros(1,nb_morceaux) -Inf;
 
 % application de la fonction
 
-c_morceaux= f_needleman_pour_base(c_morceaux, c_chroma_ref);
+c_morceaux= f_similarity_base(c_morceaux, c_chroma_ref);
 
 % application de la fonction

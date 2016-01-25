@@ -1,4 +1,4 @@
-function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
+function [c_mor, dist,D12, D21]= f_similarity_base(c_mor, c_chroma_ref)
 
     % calcule des parametres
     ext_gap= -0.5;        % a determiner precisement
@@ -76,16 +76,34 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
     dist= dist + 0.4;  % voir pour le seuil
     
     %la reference sont  
+    D21=[];
+    for k=1:size(c_mor,2)
+        for l=k+1:size(c_mor,2)
+            D21=[D21 dist(k,l)];
+        end
+    end
+    
+    Y21 = mdscale(D21,2);
+    figure;
+    title('Affichage Wateman 1->2');
+    axis([min(min(Y21)) max(max(Y21)) min(min(Y21)) max(max(Y21))]);
+    hold on;
+    for k=1:size(c_mor,2)
+        scatter(Y21(k, 1), Y21(k, 2), 'filled');
+    end
+    hold off;
+    
+    %debut des colones et debut des lignes
     D12=[];
     for k=1:size(c_mor,2)
         for l=k+1:size(c_mor,2)
-            D12=[D12 dist(k,l)];
+            D12=[D12 dist(l,k)];
         end
     end
     
     Y12 = mdscale(D12,2);
     figure;
-    title('Affichage Wateman 1->2');
+    title('Affichage Wateman 2->1');
     axis([min(min(Y12)) max(max(Y12)) min(min(Y12)) max(max(Y12))]);
     hold on;
     for k=1:size(c_mor,2)
@@ -93,22 +111,4 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
     end
     hold off;
     
-    %debut des colones et debut des lignes
-    D21=[];
-    for k=1:size(c_mor,2)
-        for l=k+1:size(c_mor,2)
-            D21=[D21 dist(l,k)];
-        end
-    end
-    
-    Y21 = mdscale(D21,2);
-    figure;
-    title('Affichage Wateman 2->1');
-    axis([min(min(Y21)) max(max(Y21)) min(min(Y21)) max(max(Y21))]);
-    hold on;
-    for k=1:size(c_mor,2)
-        scatter(Y21(k, 1), Y21(k, 2), 'filled');
-    end
-    hold off;
-        
 end
