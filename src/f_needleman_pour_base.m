@@ -20,14 +20,13 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
             % application de needleman avec accords  
             [~, score]=  f_needleman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap);
             c_mor{ref}.needlemanAccords(etu)= score;
- %          disp([chaine_ref'; chaine_etu']);
- %          disp([ref etu score]);
+
             % application de needleman avec intervals
              [~, score]=  f_needleman2_Interval(chaine_ref_inter, chaine_etu_inter, m_penalty_inter, open_gap, ext_gap);
              c_mor{ref}.needlemanInterval(etu)= score;
             
             % application de waterman avec accords
-            [chemin, score]= f_smith_waterman2(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap, nb_seq);
+            [chemin, score]= f_smith_waterman2_playlist(chaine_ref, chaine_etu, m_penalty, m_cor, open_gap, ext_gap, nb_seq);
             c_mor{ref}.watermanAccords{etu}.score= score;
             c_mor{ref}.watermanAccords{etu}.chemin= chemin;
             
@@ -38,7 +37,9 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
 
         end
     end
-    % affichage avec needleman
+    
+    
+    %affichage pour needleman
     dist= zeros(size(c_mor, 2));
     for k=1:size(c_mor, 2)          % pour tous les morceaux
         dist(k,:)= - c_mor{k}.needlemanAccords;
@@ -53,11 +54,61 @@ function [c_mor]= f_needleman_pour_base(c_mor, c_chroma_ref)
     
     Y = mdscale(D,2);
     figure;
-    title('Affichage');
+    title('Affichage needleman');
     axis([min(min(Y)) max(max(Y)) min(min(Y)) max(max(Y))]);
     hold on;
     for k=1:size(c_mor,2)
         scatter(Y(k, 1), Y(k, 2), 'filled');
     end
     hold off;
+    
+    
+    
+    % affichage avec smith waterman
+    dist= zeros(size(c_mor, 2),size(c_mor, 2));
+    for k=1:size(c_mor, 2)          % pour tous les morceaux
+        for l=1:size(c_mor,2)
+            dist(k,l)= c_mor{k}.watermanAccords{l}.score;
+        end
+    end
+    moy_dist= mean(mean(dist));
+    dist=  - dist + max(max(dist));
+    dist= dist + 0.4;  % voir pour le seuil
+    
+    %la reference sont  
+    D12=[];
+    for k=1:size(c_mor,2)
+        for l=k+1:size(c_mor,2)
+            D12=[D12 dist(k,l)];
+        end
+    end
+    
+    Y12 = mdscale(D12,2);
+    figure;
+    title('Affichage Wateman 1->2');
+    axis([min(min(Y12)) max(max(Y12)) min(min(Y12)) max(max(Y12))]);
+    hold on;
+    for k=1:size(c_mor,2)
+        scatter(Y12(k, 1), Y12(k, 2), 'filled');
+    end
+    hold off;
+    
+    %debut des colones et debut des lignes
+    D21=[];
+    for k=1:size(c_mor,2)
+        for l=k+1:size(c_mor,2)
+            D21=[D21 dist(l,k)];
+        end
+    end
+    
+    Y21 = mdscale(D21,2);
+    figure;
+    title('Affichage Wateman 2->1');
+    axis([min(min(Y21)) max(max(Y21)) min(min(Y21)) max(max(Y21))]);
+    hold on;
+    for k=1:size(c_mor,2)
+        scatter(Y21(k, 1), Y21(k, 2), 'filled');
+    end
+    hold off;
+        
 end

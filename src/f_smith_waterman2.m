@@ -30,7 +30,7 @@ for k=2:len_A+1
         ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
         ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         
-        max_tmp= 0;
+        max_tmp= -Inf;
         c_antes{k,l}(1)= 0;
         c_antes{k,l}(2)= 0;
          

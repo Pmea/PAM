@@ -1,5 +1,8 @@
 function [chemins, score]= f_smith_waterman2_playlist(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
 
+ moyenne=mean(m_sim(:));
+ m_sim= m_sim - moyenne;
+ 
 %initialisation
 
 len_A= length(chaineA);
@@ -27,12 +30,12 @@ end
 
 for k=2:len_A+1
     for l=2:len_B+1
-        disp([k l]);
-        disp([chaineA(k-1) chaineB(l-1)]);
+%         disp([k l]);
+%         disp([chaineA(k-1) chaineB(l-1)]);
         ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
         ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         
-        max_tmp= 0;
+        max_tmp= -Inf;
         c_antes{k,l}(1)= 0;
         c_antes{k,l}(2)= 0;
          
@@ -84,12 +87,11 @@ for k=1:floor((len_A+1)/2)+1     %copie de la cell
 end
 
 
-
-for k=1:size(m_sous_res,1)
+for k=1:size(m_sous_res,1)-1
     m_sous_res(k,1)= 0;
     c_sous_antes{k,1}= [0 0];
 end
-for l=1:size(m_sous_res,2)
+for l=1:size(m_sous_res,2)-1
     m_sous_res(1,l)=0;
     c_sous_antes{1,l}= [0 0];
 end
@@ -105,17 +107,24 @@ for n=1:nb_match
     
     max_tmp = max(max(m_sous_res));
     [max_x, max_y]= find(m_sous_res==max_tmp);
-    max_x= max_x(1);
-    max_y= max_y(1);
+    max_x= max_x(end);
+    max_y= max_y(end);
     
     if n == 1
         score= max_tmp;
     end
     % on met la case a 0
     m_sous_res(max_x, max_y)=0;
+
+    tmp_x= 0;
+    tmp_y= 0;
+    if mod(len_A/2,1)
+        tmp_x= 0;
+        tmp_y= -1;
+    end
     
-    chemin= [max_x+floor((len_A+1)/2)-1 max_y];
-    
+    chemin= [max_x+floor((len_A)/2)+tmp_x max_y+1+tmp_y];
+                
     while c_sous_antes{max_x, max_y}(1)>0 && c_sous_antes{max_x, max_y}(2)>0
         tmp_x= c_sous_antes{max_x, max_y}(1);
         tmp_y= c_sous_antes{max_x, max_y}(2);
