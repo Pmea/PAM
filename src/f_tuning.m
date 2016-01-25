@@ -54,6 +54,6 @@ for n = 1:nbiterations
     tuning_v(n) = percent;
 end
 
-accordage = mean(tuning_v);
+accordage = median(tuning_v);
 
 end
