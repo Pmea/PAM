@@ -1,6 +1,6 @@
 close all;
 clear all;
-[sig_tmp, Fe]= audioread('audio_gammepno11025.wav');
+[sig_tmp, Fe]= audioread('BEATLES.wav');
 sig= sig_tmp;%(1:4*Fe);
  %Fe= 44100;
  %freq=440;
