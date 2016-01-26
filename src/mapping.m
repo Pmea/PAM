@@ -97,9 +97,9 @@ for k = 1:length(albums) % On parcourt les albums
             min_chord = strfind(chord, ':mi'); % renvoie l'index du mineur
             if isempty(min_chord) % Si il n'y a pas de mineur
                 if length(chord) == 2 && (chord(2) == 'b' || chord(2) == '#') % Case b or #
-                    chord = chord(1:2);
+                    chord = [chord(1:2), ' '];
                 else % Other case
-                    chord = chord(1);
+                    chord = [chord(1), '  '];
                 end
             else % Cas mineur, on enlève le ':'
                 chord = strcat(chord(1:min_chord-1), 'm');                                    

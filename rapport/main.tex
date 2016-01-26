@@ -1,0 +1,295 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{mathtools, bm}
+\usepackage{amsfonts}
+\usepackage{amssymb, bm}
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{caption} 
+\usepackage[]{mcode}
+\pagestyle{empty}
+\pagestyle{plain} 
+\usepackage{titlesec, lastpage}
+\captionsetup{position=below}
+
+
+\begin{document}
+
+\title{Projet PAM Auto DJ, Auto-Mashup}
+\author{Maxime ARBISA, Léo FEU D'AYRTHIFIS, Samuel BELL-BELL, Pierre MAHÉ}
+\date{January 2015}
+\maketitle
+
+\newpage
+\tableofcontents
+\newpage
+
+
+\section*{Explication du code}
+\subsection*{Partie analyse}
+\begin{itemize}
+\item \textit{function accordage = f\_tuning(filename)}: fonction calculant le détunage "\textit{accordage}" en \% à partir d'un morceau "\textit{filename}".
+
+\item \textit{function F0 = f\_detect\_F0(Xk, Nfft, H, Fs, Fmin, Fmax)}: fonction détectant la fréquence fondamentale F0 à partir du produit spectral.
+
+\item \textit{function obs\_m = extractChroma(data\_v, sr\_hz, L\_n, STEP\_n, detune)}: fonction qui, pour chaque morceau étudié "\textit{data\_v}", crée une base de chroma correspondant au détunage "\textit{detune}", puis créé la matrice d'observations chroma "\textit{obs\_m}" correspondante.
+\\
+\item \textit{semi\_supervised\_nmf.m}: script réalisant la transcription automatique à l'aide de la NMF semi-supervisée.
+\\
+\item \textit{x = build\_signal(notes,Fs)}: permet de fabriquer un morceau à partir de notes MIDI (en lignes) et de leur durée, temps d'attaque et vélocité (sur la colonne correspondante).
+\end{itemize}
+
+\section*{Introduction}
+L'ensemble du code de cette section est présent dans le script "\textit{test\_nmf.m}".
+
+\part{Analyse de la bibliothèque musicale}
+
+La 1\up{ère} partie de l'analyse consiste à créer une base harmonique de référence qui nous servira à analyser nos morceaux et à leur attribuer une suite d'accords. Nous étudierons en particulier 2 manières d'analyse, l'une par chroma et l'autre par Q-transform.
+\\Afin de créer la base de référence, on utilisera les annotations en accord des morceaux des Beatles, présente à cette adresse: "\textit{http://isophonics.org/content/reference-annotations-beatles}" qui mappe tous les morceaux des Beatles avec leur accord correspondant.
+\\Mais pourquoi avoir recours à une base alord que l'on peut directement créer nos accords de référence ? Pour l'accord de DO par exemple, on a juste à créer un chroma DO-MI-SOL. L'intérêt d'une base par apprentissage est que l'on travaille avec des valeurs bien plus "réelles". En particulier pour un accord de DO, on a aussi des zones d'énergie sur les harmoniques et pas seulement sur les notes principales. Il existe plusieurs modèles qui essaient de reproduire au mieux ces imperfections et les signaux réels. Nous n'utiliserons pas ce type de pratique.
+
+\section{Création d'une base de données harmonique}
+Dans cette partie, nous allons créer la base de référence harmonique qui nous servira à analyser les morceaux de notre bibliothèque musicale. Pour celà, nous allons utiliser la base audio des albums des Beatles et leurs annotations harmoniques pour faire une associtaion descripteurs audio / Accords.
+\\Nous utiliserons dans cette partie deux calculs de descripteurs audio: les chromas et la Q-transform et nous comparerons leur performances.
+\\Dans les 2 cas, le principe reste le même. D'abord, on parcourt toute la bibliothèque des morceaux de base, ceux des Beatles, et on en extrait soit les vecteurs d'observations chromas ou Q-transform. Puis on parcourt l'ensemble des annotations afin de mapper ces vecteurs d'observation aux accords correspondants. On aura ainsi une base de référence qui nous permettra d'analyser le contenu harmonique et les patterns des morceaux présents dans nos bibliothèques musicales.
+
+\subsection{Calcul des matrices d'observations chroma}
+Dans cette section, on calcule les matrices d'observation chroma pour tous les morceaux des Beatles. Mais avant, il faut calculer le détunage pour chaque morceau.
+
+\subsubsection{Détunage des morceaux de référence}
+Le code associé à cette section se situe dans la fonction "\textit{f\_tuning.m}".
+\\La base des chroma est fondée sur des morceaux accordés sur le LA440. En pratique, il n'est pas improbable de tomber sur un morceau des Beatles accordé en LA420, beaucoup de morceaux ont un détunage, une petite variation par rapport à l'accordage 440 qu'il faut prendre en compte. 
+\\Le détunage des morceaux de référence aura 2 objectifs. 
+\\Le premier pour l'analyse des morceaux de référence est celui que l'on va utiliser tout de suite.
+\\Le deuxième sera pour le mix de morceaux, lorsqu'on voudra les aligner sur un même pitch.
+\\
+\\L'analyse par chroma implique la création d'une base chroma, qui est un ensemble de filtres passe-bandes détectant chaque classe de demi-ton. Les filtres sont des filtres passe-bandes centrés sur chaque demi-ton et dont le lobe s'étend (mais ne dépasse pas pour préserver l'unicité du filtrage) les demi-tons inférieurs et supérieurs. Les vecteurs chromas sont ensuite la somme des filtres détectant la même classe de demi-ton. Ci dessous un exemple de filtre chroma pour la classe de demi-tons La:
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{chroma_la_untuned.jpg}
+\captionof{figure}{Filtres chroma du demi-ton de classe La, La440}
+\end{center}
+
+ou en zoomant sur le La440, avec les filtres chromas consécutifs:
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{chroma_untuned_zoom.jpg}
+\captionof{figure}{Filtres chroma à proximité du La440 - Zoom}
+\end{center}
+
+Admettons maintenant que le morceau soit accordé en La430. Dans ce cas là, le la du morceau se trouvera entre les 2 filtres et ne profitera pas du maximum du filtre situé en 440Hz. On aura donc des zones d'énergie à la fois sur le La, mais aussi sur le Sol#, ce qu'on ne veut pas. Il faudrait donc avoir un filtre détuné qui décale les filtres pour mettre le la sur le la430Hz, et le détecter parfaitement:
+
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{chroma_tuned430_zoom.jpg}
+\captionof{figure}{Filtres chroma du demi-ton de classe La détuné, La430 - Zoom}
+\end{center}
+
+Ici, le La430 se trouvera sur le maximum du filtre, et sera détecté parfaitement comme un la. Il permettra aussi de ne pas avoir d'énergie sur 2 classes de chroma, mais seulement sur la note jouée. Ci dessous la matrice d'observations chroma pour une gamme de piano détunée à 450 Hz. Nos filtres étant étalonnés à 440Hz, on observe des partages d'énergie avec la classe de demi-ton supérieure (le piano sonne plus haut):
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{obs_chroma_tuned430_piano.jpg}
+\captionof{figure}{Matrice d'observations chroma pour un piano accordé en La450}
+\end{center}
+
+Mais avant celà, on doit être capable de calculer le détunage du morceau. Pour celà, on va prendre N = 20 trames aléatoires de 1 seconde du morceau. 
+\\Sur chacune de ces trames, on calcule la fréquence fondamentale F0 via le produit spectral dans la fonction "\textit{f\_detect\_F0}". Pour celà, on calcule le spectre du signal puis on réalise un produit spectral en compressant le signal H = 10 fois.
+\\Le principe du produit spectral est montré dans l'image ci-dessous:
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{produit_spectral.png}
+\captionof{figure}{Méthode du produit spectral}
+\end{center}
+
+On compresse donc le spectre H fois. A chaque compression h, on va retrouver à la fréquence F0 le h\up{ème} harmonique situé à h*F0 sur le spectre original.
+\\On peut retrouver d'autres harmoniques qui se superposent. Par exemple, pour h=2, on retrouvera une superposition des harmoniques pairs, le 4\up{ème} harmonique se retrouvera sur le 2\up{ème}, le 6\up{ème} sur le 3\up{ème}, etc. 
+\\Cependant, l'intérêt de la multiplication est de supprimer tous les autres harmoniques, y compris ceux qui se superposent. En effet, si le spectre original comporte N harmoniques, au bout de H=N compressions, seul F0 aura encore une composante, les autres étant à 0, d'où notre choix de H = 10 pour discriminer les harmoniques.
+\\La multiplication permettra donc de ne renvoyer que la fondamentale F0.
+\\
+\\Une fois la fondamentale reouvée pour une trame, on la mappe avec la fréquence la plus proche si elle était accordée en La440, on fait pour celà l'hypothèse qu'il n'y a pas d'accordage plus grand qu'un quart de ton pour ne pas se tromper de demi-ton (hypothèse vérifiée sur l'ensemble des morceaux).
+\\Puis on calcule l'écart en \%. On réalise ensuite la même étude sur les 20 trames aléatoires, et on moyenne pour obtenir le détunage du morceau.
+
+\subsubsection{Création de la base de filtres chromas}
+L'intérêt d'une étude avec détunage est l'augmentation de sa précision, son désavantage est son temps en calcul. On a 2 solutions pour adapter les chromas au détunage.
+\\Soit on récupère le détunage en pourcentage et on calcule pour chaque morceau une nouvelle base de chromas décalée sur l'accordage du morceau. Ceci a le principal désavantage de recalculer à chaque morceau une base de chromas quand on peut en avoir qui fonctionne pour n'importe quel morceau.
+\\On peut ainsi utiliser une même base chroma pour tous les morceaux, il suffit juste de les recaler sur le La440 avant extraction. Pour celà, une fois le detunage obtenu, on resample le morceau sur la fréquence d'échantillonnage "detunage*sr_hz" pour le recaler sur le La440 puis on fait une analyse simple par chroma.
+\\On étudie la différence de temps entre ces 2 techniques pour le calcul des matrices d'observations chromas pour tous les morceaux.
+\\Ainsi, on obtient pour chaque morceau leur matrice d'observations chroma:
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{obs_chroma_morceau.jpg}
+\captionof{figure}{Matrice d'observations chroma pour "Please please me"}
+\end{center}
+
+
+\subsubsection{Discussion sur la résolution et sur la précision spectrale}
+Le problème de la résolution et de la précision spectrales se pose à chaque problème. On veut à la fois avoir un spectre de qualité (résolution spectrale) qui ne dépend que de la longueur de signal prélevé, et une bonne lecture de ce spectre (précision spectrale) qui ne repose que sur le nombre de points $N_{fft}$ avec lequel on calcule la transformée de Fourier.
+\\En particulier, la résolution du spectre qu'on veut avoir va dépendre des fréquences que l'on veut discriminer (cf. Transformée à Q-constante).
+\\Dans cette première partie avec les chromas, on a réalisé une extraction chroma qui dépendait du tempo du morceau. Puisque de toute façon, il faudra bien faire une détection de tempo des morceaux, on peut déjà la réaliser ici. Les changements d'accords ne se faisant que sur les temps ou sur les demi-temps (c'est l'hypothèse), on peut ne faire l'extraction des chromas sur ces temps. Celà nous permet d'améliorer notre temps de calcul (des fenêtres plus grandes (de durée 1 temps) avec un pas d'avancement de 1 demi-temps) donc moins de fenêtres à traiter, et une meilleure résolution spectrale (car des fenêtres plus grandes) comparé aux fenêtres de 0.1s que l'on prélevait avant.
+\\La précision spectrale est calculée à partir de la longueur de fenêtre. On choisit un $N_{fft}$ puissance de 2 et supérieur à la longueur de la fenêtre. On réalise alors un zéro-padding supérieur à 1 afin d'avoir plus de points pour notre fft et améliorer la précision spectrale $\frac{1}{N_{fft}}$.
+\\La seule différence est au niveau du temps de traitement. L'avantage du resampling était qu'on ne calculait la base chroma qu'une seule fois pour tous les morceaux, mais ceci n'est valable que si on prend la même fenêtre d'analyse pour tous les morceaux. Ici, si on base l'analyse des morceaux sur leur tempo, on devra recalculer une basede chromas sur chaque morceau.
+
+\subsection{Transformée à Q-constante (CQT)}
+La transformée à Q-constante est là pour altérer au problème de résolution de la transformée de Fourier on utilise la Q-constante-transformation qui change la réolution fréquentielle en fonction des fréquences considérées.
+\\On rappelle que la résolution spectrale n'est dépendante que de la longueur du signal prélevé et détermine la qualité d'un spectre. Or, la relation liant la longueur $L_s$ d'un signal à la précision du filtrage, c'est à dire à sa largeur de bande $B_w$ est :
+
+\begin{equation*}
+L_{sec} = \frac{C_w}{B_w} 
+\end{equation*}
+
+avec $C_w$ une constante relative au type de fenêtre utilisé.
+\\Si l'on veut détecter une différence de demi-ton dans les basses fréquences entre le G#1(51.91 Hz) et le A1(55 Hz), on aura un $L_{sec}$ bien plus grand que pour des détections dans les hautes fréquences où la bande passante $B_w$ sera plus élevée, donc $L_{sec}$ sera plus petit.
+\\L'idéal serait donc de prendre une longueur différente de fenêtre pour chaque fréquence, de sorte à avoir constamment une bonne résolution fréquentielle.
+\\
+\\Les équations qui régissent ce problème sont données ci-dessous:
+
+\begin{equation*}
+Q= \frac{f_{k}}{f_{k+1}-f_{k}} 
+\end{equation*}
+
+\begin{equation*}
+Q =\frac{f_{k}}{B_{w}} = \frac{f_{k}}{C_{w}/L} = \frac{f_{k}*L}{C_{w}}
+\end{equation*}
+
+En partant de la TFCT mais où la fenêtre varie pour obtenir un facteur de qualit� constante. Ce facteur est bas� sur des propri�t�s de perception de l'oreille humaine.
+
+\begin{equation*}
+X(n,k) = \sum_{n=0}^{N-1}x(n)W(n-m) e^{- \frac{2j\pi m k}{N}}
+\end{equation*}
+
+
+\subsubsection{CQT classique}
+L'algorithme pour cr�er une CQT classique se d�roule en trois �tapes : 
+Dans un premier temps on calcule me kernel de la Q-transform, o� un �l�ment du kernel est le produit entre la fen�tre de la Q-constante actuelle et de l'exponentielle.
+\begin{equation*}
+X(k) = \frac{1}{N}\sum_{n=0}^{N-1}x(n)W(n-m) e^{- \frac{2j\pi m k}{N}} ~ kern(n) = W(n-m) e^{- \frac{2j\pi m k}{N}}
+\end{equation*}
+avec 
+\begin{equation*}
+N= N[k] = Q\frac{f_{s}}{f_{k}}
+\end{equation*}
+Ensuite on fen�tre le Kernel avec une fen�tre de Hann. 
+Enfin on multiplie le signal par le kernel $\sum_{n=0}^{Nb_k}x[t] * kern(k) $
+La complexit� temporelle de cette version s'av�re tr�s grande, on multiplie � chaque fois les trames de la TFCT par un kernel qui a de nombreux �l�ments, de plus le facteur de qualit� Q doit avoir un nombre de p�riode plut�t grand pour �tre pr�cis, le nombre de calculs est donc de Q*nbElemKern*nbframe. De plus, l'hopsize doit faire la taille de la plus petit element du kernel sur trois (puisqu'une fen�tre fait 75\% de recouvrement).
+
+\subsubsection{CQT efficiente}
+Une deuxi�me m�thode appel�e Q-transfort-efficient , les deux premi�res �tapes sont semblables � la pr�c�dente. Ensuite on applique une TFCT au signal x et on utilise le produit spectral entre la $KERN = TF(kern)$. Puis, puisqu'une convolution en temporel est un produit en fr�quence on calcule $X(k,n)*KERN(f)$.\\
+Cette m�thode permet de gagner une grande complexit� temporelle par rapport � la m�thode pr�c�dente.
+
+\subsection{Mapping avec les annotations}
+
+\section{Analyse de la bibliothèque musicale}
+\subsection{Avec les morceaux des Beatles}
+\subsection{Avec des accords pré-joués}
+
+
+\begin{center}
+\includegraphics[width=\textwidth]{harmo_DO.png}
+\captionof{figure}{Construction des harmoniques de DO - F0 = 262Hz}
+\end{center}
+
+Puis, on multiplie par les coefficients exponentiels pour représenter la décroissance:
+
+\begin{center}
+\includegraphics[width=\textwidth]{exp_DO.png}
+\captionof{figure}{Ajout d'une décroissance exponentielle}
+\end{center}
+
+Puis on convolue par une fenêtre de Hann:
+
+\begin{center}
+\includegraphics[width=\textwidth]{conv_DO.png}
+\captionof{figure}{Convolution par une fenêtre de Hann}
+\end{center}
+
+On construit ensuite la matrice d'activations temporelles. Pour celà, on remplace dans le code la valeur de $\tau$, ainsi que la valeur de $H_s$
+
+\begin{lstlisting}
+Fh = Fe/(Nfft/4); % freq. d'echantillonnage pour les activations
+DeltaT =0.5; % en seconde
+DeltaT = round(DeltaT*Fh); % en points
+t = (0:DeltaT-1)/Fh; % en seconde
+tau = 0.3*DeltaT/Fh; % tau est en temps, on redivise donc par Fh
+h = exp(-t/tau);
+z = zeros(1,DeltaT);
+
+Hs = [h z z;z h z;h h z] ; % On veut 3 elements (on aura donc 3 lignes)
+                           % et a chaque fois, on choisit l'element qui
+                           % s'activera (emplacement du h). Ici, on active
+                           % d'abord le do (1ere place), puis le mi(2eme
+                           % place), puis do/mi (1ere et 2eme place)
+\end{lstlisting}
+
+
+
+\section{Alignement des séquences}
+\subsection{Algorithme de Needleman-Wunsch}
+\subsubsection{Presentation de l'algorithme}
+Cette algorithme a pour but de pr�senter l'alignement maximal global entre deux cha�nes de caract�re, il a �t� d�vellop�
+pour trouver les similarit� entre les acides amin� de deux prot�ines. Nous r�utilisons ce principe pour calculer l'alignement global maximal entre les accords de deux morceaux.\\
+Cette algorithme est programm� sous forme de programmation dynamique, il assure donc l'optimalit� de la solution et est beaucoup plus rapide qu'un algorithme na�f car la solution d�pend des sous solutions pr�c�dentes.\\
+Il existe 3 op�rations possibles pour  construire de la matrice de co�t entre les deux cha�ne de caract�re:
+ \begin{itemize}
+\item match : les deux lettres courantes sont les m�mes;
+\item mismatch : les deux lettres courantes ne sont pas les m�mes;
+\item indel (INsertion ou DELetion) : une lettre est align�e avec un gap dans l'autre chaine de caract�re
+\end{itemize}
+
+Pour remplir la matrice on remplit la premi�re colonne et la premi�re ligne avec le poids d'un indel * positionColonne ou indel * positionLigne en fonction.
+On se base ensuite sur le principe d'optimalit� des op�rations possibles pour remplir le reste de la matrice de co�t M et S, la matrice de similarit�.
+\begin{equation*}
+M_{i,j} = max(M_{i-1,j-1}+ S(A_{i},B_{j}),M_{i,j-1} + d , M_{i-1,j} + d)
+\end{equation*}
+\underline{Backtracking} :
+Tout en construisant la matrice de co�t , on construit une matrice d'ant�c�dents pour savoir d'o� l'on vient par rapport � la case courante avec les mouvements repr�sentant les matchs (diagonal), mismatchs (gauche) et Indel (monter).
+
+\subsection{Smith-Waterman}
+\subsubsection{Presentation de l'algorithme}
+� la diff�rence de Needleman-Wunsch , Smith-Warerman a pour but de pr�senter l'alignement maximal local entre deux cha�nes de caract�re. La matrice de co�t Needleman-Wunsch est non-negative d'o� la r�gle ajout�e par rapport a Needleman-Wunsch de mettre a 0 si le score de l'�l�ment suivant deviens n�gatif.
+La premi�re ligne et la premi�re colonne est initialis�e a 0.
+\begin{equation*}
+M_{i,j} = max(M_{i-1,j-1}+ S(A_{i},B_{j}),M_{i,j-1} + d , M_{i-1,j} + d , 0)
+\end{equation*}
+
+\underline{Backtracking} On cherche la position o� se trouve le ou les maximums de la matrice de co�t puis en suivant la matrice d'ant�c�dents � partir de la position trouv�e, on parcourt jusqu'� la rencontre d'un �l�ment de la matrice de co�t � z�ro. On r�cup�re alors cette chaine. 
+
+
+\subsection{Affine GAP Cost}
+Nous avons commenc� par un linear cost, affine gap cost , permet de construire deux ssquences pas parfaitement similaire mais sans trou avec un indel au milieu.\\
+En effet l'affine gap cost est bas� sur le s�paration du gap cost en 2 : open gap et ext gap.\\
+Cette m�thode complexifie le backtracking de Smith-Waterman et Needleman-Wunsch qui demande alors l'existence de trois matrices de traceback.
+
+
+\part{Synthèse de Mash-ups et de mix DJ's}
+
+\section{Tracking de beat}
+Pour suivre l'�volution du tempo d'un morceau au cours du temps nous avons utilis� le sch�ma suivant  :\\
+
+Les onsets repr�sente l'attaque du son, pour les d�tecter on a besoin de la TFCT du signal avec des une fen�tre de 46 ms et un overlap de 10 ms (ce qui permet de construire une TFTC � une �chelle plut�t proche de la perception humaine).
+\begin{equation*}
+X(n,k) = \sum_{m=-N/2}^{N/2-1}x(hn+m)w(m) e^{- \frac{2j\pi m k}{N}}
+\end{equation*}
+Il existe plusieurs fonctions de d�tection de onsets, nous avons utilis� le Spectral Flux (SF) qui se calcul de la mani�re suivante :
+on calcule la diff�rentiation trame par trame suivie d'une half-wave rectification puis on la somme
+\begin{equation*}
+SF(n) =  \sum_{m=-N/2}^{N/2-1} H(\mid{X(n,k)|}-\mid{X(n-1,k)|})
+\end{equation*}
+
+Une fois que nous avons notre fonction d'onsets on peut alors construire notre rythmogramme. Pour cela on fait une fonction d'autocorrelation du Spectral Flux sur des trames de 8 secondes. Ensuite on concat�ne alors chaque vision temporel voir p�riode
+
+Avec une  FFT � la place d'une autocorrelation on se retrouve dans le domaine fr�quentiel, le tempo �tant une fr�quence, mise a l'�chelle on obtient alors les bandes repr�sentant les bpm.\\
+
+
+Une fois le rythmogramme du domaine fr�quentiel construit, nous rep�rons le bpm pour chaque trame. Nous souhaitons alors trouv� les positions de battue r�elles dans le morceau en sample. Pour cela il suffit de convoluer chaque trame du Flux Spectral par un peigne de Dirac. On retrouve alors le d�calage en r�cup�rant le nombre de sample entre le onset maximal de la trame et le Dirac le plus proche.
+On applique � nouveau sur l'ensemble des frames cette m�thode et on retient les positions trouv�es.
+
+
+%\section{Bibliographie}
+%\bibliographystyle{plain} % Le style est mis entre accolades.
+%\biblio
+
+\end{document}
+

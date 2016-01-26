@@ -30,8 +30,6 @@ if 0
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
     % Read Excel file
-    %[numbers, pieces_id, everything] = xlsread('Corp_Beatles.xls', 'A:A'); % Get ID of pieces
-    %[numbers, pieces_name, everything] = xlsread('Corp_Beatles.xls', 'E:E'); % Get name of pieces
     corres_piste_titre=tdfread('Corp_Beatles.csv', 'semi');
     pieces_id= corres_piste_titre.mediaID;
     pieces_name= corres_piste_titre.title;
@@ -79,7 +77,7 @@ if 0
 %             tempo = mean(tempo_v);
 %             figure();
 %             plot(1:length(tempo_v), tempo_v);
-            
+
             % Création de la base chromas et observation chromas 
             file_id = file_id(1:end-4); % Removes '.wav' at the end
             
@@ -93,7 +91,6 @@ if 0
                 warning('Pas de correspondance trouve entre le fichier et les noms de morceaux');
             end
             
-            %[truefalse, index] = ismember(file_id, pieces_id); % Returns the index of the id  
             ind_fin= length(pieces_name(index,:));
             while strcmp(pieces_name(index,ind_fin), ' ')
                 ind_fin= ind_fin - 1;
@@ -163,9 +160,9 @@ if 1
     end
     albums = albums(ind_deb:end);
     
-    %c_morceaux= cell();
+    c_morceaux= cell(1,1);
     
-    for k = 1:1%length(albums) % On parcourt les albums
+    for k = 1:length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
         ind_deb= 1;
@@ -175,7 +172,7 @@ if 1
         
         morceaux = morceaux(ind_deb:end);
         
-        for k = 1:1%length(morceaux) % On parcourt les morceaux
+        for k = 1:length(morceaux) % On parcourt les morceaux
             % On obtient name_file = name.mp3
             name_file = morceaux(k).name;
             
@@ -225,6 +222,7 @@ if 1
     % Fin du parcours des fichiers audio
     cd ../ % Sort du répertoire des albums
     
+    c_morceaux= c_morceaux(2:end);
     % On sauve le dictionnaire
     save(FILE_s.EXPE1_MUSIC);
 else
@@ -272,7 +270,9 @@ m_ordre_chords=[
     ];
 
 for k = 1: size(m_ordre_chords,1)
-    c_chroma_ref= Accords_mat(m_ordre_chords(k));
+    disp(m_ordre_chords(k,:));
+    c_chroma_ref{k}= Accords_mat(m_ordre_chords(k,:));
+    imagesc(c_chroma_ref{k});
 end
 
-%clearvars -except c_chroma_ref c_morceaux  %pour la version final
+%clearvars -except   %pour la version final
