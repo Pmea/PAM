@@ -4,20 +4,20 @@
 
 function distance_m_24 = f_cycle_des_quintes()
 
-cycle_quinte_Maj_v = {'C','F','Bb','Eb','Ab','Db','Gb','B','E','A','D','G'}
+cycle_quinte_Maj_v = {'C','F','Bb','Eb','Ab','Db','Gb','B','E','A','D','G'};
 
-cycle_quinte_Maj_interval = []
+cycle_quinte_Maj_interval = [];
+
 for k=1:length(cycle_quinte_Maj_v )
-    cycle_quinte_Maj_interval = [cycle_quinte_Maj_interval equivalent_accord_g(cycle_quinte_Maj_v(k))]
-
+    cycle_quinte_Maj_interval = [cycle_quinte_Maj_interval equivalent_accord_g(cycle_quinte_Maj_v(k))];
 end
 
 %don't workcycle_quinte_min_v = relative_mineur(cycle_quinte_Maj_interval);
 %Weird...
-cycle_quinte_min_v = {'A','D','G','C','F','Bb','Eb','Ab','Db','Gb','B','E'}
+cycle_quinte_min_v = {'A','D','G','C','F','Bb','Eb','Ab','Db','Gb','B','E'};
 mat_24 = matrice_distance();
-keyboard;
-to_proba(mat_24);
+%keyboard;
+%to_proba(mat_24);
 %a faire a fire...
 distance_m_12 = 1;
 
@@ -76,7 +76,7 @@ for i=1:24
       end
     end
 end
-keyboard;
+%keyboard;
 for k= 1:24
     res(k,:) = mat_temp(k,:)/sum(mat_temp(k,:));
 end

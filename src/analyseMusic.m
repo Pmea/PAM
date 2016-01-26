@@ -12,8 +12,8 @@ FILE_s.EXPE1_PROBA_CHORDS    = 'proba_chords.mat'; % Probas de passage d'un acco
 FILE_s.EXPE1_MUSIC    = 'music.mat'; % Analyse par accords pour bibliothèque musicale 
 
 %% Parameters
-L_sec					= 0.6;	% --- Analysis window duration in seconds
-STEP_sec				= 0.3;	% --- Analysis hop size in seconds
+L_sec					= 0.2;	% --- Analysis window duration in seconds
+STEP_sec				= 0.1;	% --- Analysis hop size in seconds
 
 Observations = containers.Map(); % Dictionnaire contenant les vecteurs d'observations chromas pour tous les morceaux
                                  % Keys: noms des morceaux
@@ -25,7 +25,7 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 1
+if 0
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
@@ -68,15 +68,15 @@ if 1
             detune = f_tuning(file_id);
             rmpath(directory_function);
 
-            % Resample
-            data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
-            detune = 1;
+%             % Resample
+%             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
+%             detune = 1;
 
-            % Calcul du tempo
-            addpath(directory_function);
-            [y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
-            rmpath(directory_function);
-            tempo = mean(tempo_v)
+%             % Calcul du tempo
+%             addpath(directory_function);
+%             [y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
+%             rmpath(directory_function);
+%             tempo = mean(tempo_v);
 %             figure();
 %             plot(1:length(tempo_v), tempo_v);
             
@@ -128,7 +128,7 @@ end
 
 
 %% Mapping avec les annotations
-if 1
+if 0
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
     [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec);    
     
@@ -143,9 +143,10 @@ else
     load(FILE_s.EXPE1_PROBA_CHORDS);
 end
 
+Accords_mat_2 = containers.Map(); % Dictionnaire contenant les moyennes des chromas des accords
 keykey = Accords_mat.keys();
 for k = 1:length(keykey)
-    Accords_mat(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
+    Accords_mat_2(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
 end
 
 %% Analyser la bibliothèque musicale
@@ -162,7 +163,7 @@ if 1
     end
     albums = albums(ind_deb:end);
     
-    c_morceaux= cell();
+    %c_morceaux= cell();
     
     for k = 1:1%length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
@@ -187,8 +188,8 @@ if 1
             detune = f_tuning(name_file);
             rmpath(directory_function);
             
-            data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
-            detune = 1;
+%             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
+%             detune = 1;
             
             % Création de la base chromas et observation chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
@@ -198,9 +199,15 @@ if 1
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             L_n				= round(L_sec*4*sr_hz); % window duration in points
             STEP_n			= round(STEP_sec*4*sr_hz); % Hop size in points
-            [list_chords, list_times]	= extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords_mat, Proba);
+            [list_chords, list_times]	= extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords_mat_2, Proba);
             rmpath(directory_function);
             
+            % Détection d'accords par HMM
+            addpath(directory_function); % Ajoute le répertoire pour runner la fonction
+            obs_m = extractChroma(data_v, sr_hz, L_n, STEP_n, detune);
+            path_v = HMM(Accords_mat, obs_m);
+            rmpath(directory_function); % Ajoute le répertoire pour runner la fonction
+
             % On le met dans le dictionnaire
             Chords(file_key) = list_chords;
             
