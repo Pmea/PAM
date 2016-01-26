@@ -25,13 +25,11 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 1
+if 0
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
     % Read Excel file
-    %[numbers, pieces_id, everything] = xlsread('Corp_Beatles.xls', 'A:A'); % Get ID of pieces
-    %[numbers, pieces_name, everything] = xlsread('Corp_Beatles.xls', 'E:E'); % Get name of pieces
     corres_piste_titre=tdfread('Corp_Beatles.csv', 'semi');
     pieces_id= corres_piste_titre.mediaID;
     pieces_name= corres_piste_titre.title;
@@ -67,18 +65,6 @@ if 1
             addpath(directory_function);
             detune = f_tuning(file_id);
             rmpath(directory_function);
-
-            % Resample
-         %   data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
-         %   detune = 1;
-
-            % Calcul du tempo
-            %addpath(directory_function);
-            %[y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
-            %rmpath(directory_function);
-           % tempo = mean(tempo_v)
-%             figure();
-%             plot(1:length(tempo_v), tempo_v);
             
             % Création de la base chromas et observation chromas 
             file_id = file_id(1:end-4); % Removes '.wav' at the end
@@ -93,7 +79,6 @@ if 1
                 warning('Pas de correspondance trouve entre le fichier et les noms de morceaux');
             end
             
-            %[truefalse, index] = ismember(file_id, pieces_id); % Returns the index of the id  
             ind_fin= length(pieces_name(index,:));
             while strcmp(pieces_name(index,ind_fin), ' ')
                 ind_fin= ind_fin - 1;
@@ -130,7 +115,7 @@ end
 %% Mapping avec les annotations
 if 1
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
-    [Accords_morceaux, Accords, Accords_mat, Proba] = mapping_old(Observations, STEP_sec);    
+    [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec);    
     
     % On sauve le dictionnaire
     save(FILE_s.EXPE1_CHORDS_PLAYS);
@@ -162,9 +147,9 @@ if 1
     end
     albums = albums(ind_deb:end);
     
-    c_morceaux= cell();
+    c_morceaux= cell(1,1);
     
-    for k = 1:1%length(albums) % On parcourt les albums
+    for k = 1:length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
         ind_deb= 1;
@@ -174,7 +159,7 @@ if 1
         
         morceaux = morceaux(ind_deb:end);
         
-        for k = 1:1%length(morceaux) % On parcourt les morceaux
+        for k = 1:length(morceaux) % On parcourt les morceaux
             % On obtient name_file = name.mp3
             name_file = morceaux(k).name;
             
@@ -218,6 +203,7 @@ if 1
     % Fin du parcours des fichiers audio
     cd ../ % Sort du répertoire des albums
     
+    c_morceaux= c_morceaux(2:end);
     % On sauve le dictionnaire
     save(FILE_s.EXPE1_MUSIC);
 else
@@ -265,7 +251,9 @@ m_ordre_chords=[
     ];
 
 for k = 1: size(m_ordre_chords,1)
-    c_chroma_ref= Accords_mat(m_ordre_chords(k));
+    disp(m_ordre_chords(k,:));
+    c_chroma_ref{k}= Accords_mat(m_ordre_chords(k,:));
+    imagesc(c_chroma_ref{k});
 end
 
 %clearvars -except   %pour la version final
