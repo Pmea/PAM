@@ -117,14 +117,18 @@ for sliding = 1:STEP_n:ending
     end
     
     % Same chord ?
+     while size(chord,2) < 3
+        chord= [chord ' '];
+     end
+    
     if ~strcmp(chord, former_chord) % Si on a changé d'accord
         if abs(begin/sr_hz-sliding/sr_hz)>0.2
-            list_chords = [list_chords, former_chord];
+            list_chords = [list_chords; former_chord];
             list_times = [list_times; begin/sr_hz sliding/sr_hz];
             begin = sliding;
         end
     end
-         
+      
     former_chord = chord;
     nb_trames = nb_trames + 1;
 end

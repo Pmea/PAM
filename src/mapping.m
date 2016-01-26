@@ -29,7 +29,12 @@ Proba_tot = containers.Map(); % Dictionnaire contenant le nombre total d'évèneme
 % Parcours de la base de référence musicale
 cd ./The_Beatles_annot % va dans l'ensemble des annotations des albums
 albums = dir(pwd); % récupère les annotations de tous les albums
-albums = albums(3:end); % Enlève le '.' et le '..'
+
+ind_deb= 1;
+while strcmp(albums(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
+    ind_deb= ind_deb + 1;
+end
+albums = albums(ind_deb:end);
 
 for k = 1:length(albums) % On parcourt les albums
     cd(albums(k).name) % Va dans l'album
@@ -38,7 +43,7 @@ for k = 1:length(albums) % On parcourt les albums
     
     for k = 1:length(annots) % On parcourt les annotations de chaque morceaux
         name_file = annots(k).name;
-                
+        disp(name_file);        
         % Read annotations
         fileID = fopen(name_file, 'r'); % read file
         formatSpec = '%f %f %s';
@@ -64,7 +69,7 @@ for k = 1:length(albums) % On parcourt les albums
         % Extrait la matrice d'observations chroma correspondante
             obs_m = Observations(name_file); % A changer suivant le nom des fichiers
         else
-            fprintf(1, name_file);
+            warning(name_file);
             break;
         end
         
@@ -91,9 +96,9 @@ for k = 1:length(albums) % On parcourt les albums
             min_chord = strfind(chord, ':mi'); % renvoie l'index du mineur
             if isempty(min_chord) % Si il n'y a pas de mineur
                 if length(chord) == 2 && (chord(2) == 'b' || chord(2) == '#') % Case b or #
-                    chord = chord(1:2);
+                    chord = strcat(chord(1:2), ' ');
                 else % Other case
-                    chord = chord(1);
+                    chord = strcat(chord(1), '  ');
                 end
             else % Cas mineur, on enlève le ':'
                 chord = strcat(chord(1:min_chord-1), 'm');                                    
@@ -103,8 +108,8 @@ for k = 1:length(albums) % On parcourt les albums
 %             if ~isempty(min_chord) % S'il y a un ':'
 %                 chord = strcat(chord(1:min_chord-1), chord(min_chord+1:end));
 %             end
-            
-            chroma = mean(obs_m(:, deb_trame:fin_trame), 2); % On moyenne les chromas correspondant
+
+           chroma = mean(obs_m(:, deb_trame:fin_trame), 2); % On moyenne les chromas correspondant
 
             % Matrice d'observations des accords
             if isKey(Accords_mat, chord) % s'il est déjà présent

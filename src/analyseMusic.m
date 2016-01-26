@@ -30,9 +30,12 @@ if 1
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
     % Read Excel file
-    [numbers, pieces_id, everything] = xlsread('Corp_Beatles.xls', 'A:A'); % Get ID of pieces
-    [numbers, pieces_name, everything] = xlsread('Corp_Beatles.xls', 'E:E'); % Get name of pieces
-
+    %[numbers, pieces_id, everything] = xlsread('Corp_Beatles.xls', 'A:A'); % Get ID of pieces
+    %[numbers, pieces_name, everything] = xlsread('Corp_Beatles.xls', 'E:E'); % Get name of pieces
+    corres_piste_titre=tdfread('Corp_Beatles.csv', 'semi');
+    pieces_id= corres_piste_titre.mediaID;
+    pieces_name= corres_piste_titre.title;
+    
 	% Parcours de la base de référence musicale
     cd ./The_Beatles % va dans l'ensemble des albums
     albums = dir(pwd); % récupère tous les albums
@@ -74,15 +77,29 @@ if 1
             [y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
             rmpath(directory_function);
             tempo = mean(tempo_v)
-            figure();
-            plot(1:length(tempo_v), tempo_v);
+%             figure();
+%             plot(1:length(tempo_v), tempo_v);
             
             % Création de la base chromas et observation chromas 
             file_id = file_id(1:end-4); % Removes '.wav' at the end
             
             % Map name with excel file
-            [truefalse, index] = ismember(file_id, pieces_id); % Returns the index of the id
-            file_key = lower(pieces_name{index}); % Get piece name in lower case
+            index=1;
+            found=false;
+            while strcmp(pieces_id(index,1:length(file_id)), file_id) ~= 1
+                index= index+1;
+            end
+            if strcmp(pieces_id(index,1:length(file_id)), file_id) ~= 1
+                warning('Pas de correspondance trouve entre le fichier et les noms de morceaux');
+            end
+            
+            %[truefalse, index] = ismember(file_id, pieces_id); % Returns the index of the id  
+            ind_fin= length(pieces_name(index,:));
+            while strcmp(pieces_name(index,ind_fin), ' ')
+                ind_fin= ind_fin - 1;
+            end
+            
+            file_key = lower(pieces_name(index,1:ind_fin)); % Get piece name in lower case
             
             str = sprintf('%s: Calcul de la matrice des observations chroma\n', file_key);
             fprintf(1, str);
@@ -145,6 +162,8 @@ if 1
     end
     albums = albums(ind_deb:end);
     
+    c_morceaux= cell();
+    
     for k = 1:1%length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
@@ -152,6 +171,7 @@ if 1
         while strcmp(morceaux(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
             ind_deb= ind_deb + 1;
         end
+        
         morceaux = morceaux(ind_deb:end);
         
         for k = 1:1%length(morceaux) % On parcourt les morceaux
@@ -173,8 +193,8 @@ if 1
             % Création de la base chromas et observation chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
             str = sprintf('%s: Analyse des accords\n', file_key);
-            fprintf(1, str);
-
+            fprintf(1, str);   
+            
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             L_n				= round(L_sec*4*sr_hz); % window duration in points
             STEP_n			= round(STEP_sec*4*sr_hz); % Hop size in points
@@ -183,8 +203,16 @@ if 1
             
             % On le met dans le dictionnaire
             Chords(file_key) = list_chords;
+            
+            % creation de la structure
+            nouv_morceau.name= name_file;
+            nouv_morceau.fe= sr_hz;
+            nouv_morceau.accords= list_chords;
+            nous_morceau.temps_accords= list_times;
+            
+            % concatenation de la structure
+            c_morceaux= [c_morceaux nouv_morceau];
         end
-        
         cd ../ % Sort de l'album
     end
     % Fin du parcours des fichiers audio
@@ -196,4 +224,48 @@ else
 	load(FILE_s.EXPE1_MUSIC);
 end
 
+%% recuperation chroma de reference
 
+m_ordre_chords=[          
+    'C  ';
+    'C# ';% meme note
+    'Db ';%
+    'D  ';
+    'D# ';%
+    'Eb ';%
+    'E  ';
+    'F  ';
+    'F# ';%
+    'Gb ';%
+    'G  ';
+    'G# ';%
+    'Ab ';%
+    'A  ';
+    'A# ';%
+    'Bb ';%
+    'B  ';
+     
+    'Cm ';        % accord mineur
+    'C#m';%
+    'Dbm';%
+    'Dm ';
+    'D#m';%
+    'Ebm';%
+    'Em ';
+    'Fm ';
+    'F#m';%
+    'Gbm';%
+    'Gm ';
+    'G#m';%
+    'Abm';%
+    'Am ';
+    'A#m';%
+    'Bbm';%
+    'Bm ';
+    ];
+
+for k = 1: size(m_ordre_chords,1)
+    c_chroma_ref= Accords_mat(m_ordre_chords(k));
+end
+
+%clearvars -except c_chroma_ref c_morceaux  %pour la version final
