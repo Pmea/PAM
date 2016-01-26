@@ -1,4 +1,4 @@
-function [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec)
+function [Accords_morceaux, Accords, Proba] = mapping(Observations, STEP_sec)
 % Fait le mapping entre les annotations et les accords
 % 1) pour chaque morceaux, on a le dictionnaire Accords_morceaux
 % 2) Regroupe les accords dans Accords
@@ -12,8 +12,6 @@ Accords_morceaux = containers.Map(); % Dictionnaire contenant pour chaque morcea
 Accords = containers.Map(); % Dictionnaire contenant les chromas de référence pour chaque accord
                             % Keys: Accords
                             % Values: chromas associés
-                            
-Accords_mat = containers.Map();
 
 Proba = containers.Map(); % Dictionnaire contenant les probabilités de passage d'un accord à l'autre
                           % Keys: Accords sachant qu'il y a eu un autre
@@ -24,7 +22,7 @@ Proba_tot = containers.Map(); % Dictionnaire contenant le nombre total d'évèneme
                               % Keys: Accords
                               % Values: nombre de fois qu'il a été
                               % rencontré
-                              
+
 %% Trouve les annotations - lancé depuis le répertoire courant
 % Parcours de la base de référence musicale
 cd ./The_Beatles_annot % va dans l'ensemble des annotations des albums
@@ -34,8 +32,8 @@ ind_deb= 1;
 while strcmp(albums(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
     ind_deb= ind_deb + 1;
 end
-albums = albums(ind_deb:end);
 
+albums = albums(ind_deb:end);
 for k = 1:length(albums) % On parcourt les albums
     cd(albums(k).name) % Va dans l'album
     annots = dir('*.lab'); % On récupère les annotations des morceaux
@@ -43,7 +41,7 @@ for k = 1:length(albums) % On parcourt les albums
     
     for k = 1:length(annots) % On parcourt les annotations de chaque morceaux
         name_file = annots(k).name;
-        disp(name_file);        
+                
         % Read annotations
         fileID = fopen(name_file, 'r'); % read file
         formatSpec = '%f %f %s';
@@ -69,7 +67,7 @@ for k = 1:length(albums) % On parcourt les albums
         % Extrait la matrice d'observations chroma correspondante
             obs_m = Observations(name_file); % A changer suivant le nom des fichiers
         else
-            warning(name_file);
+            fprintf(1, name_file);
             break;
         end
         
@@ -104,19 +102,7 @@ for k = 1:length(albums) % On parcourt les albums
                 chord = strcat(chord(1:min_chord-1), 'm');                                    
             end
             
-%             min_chord = strfind(chord, ':'); % renvoie l'index du mineur
-%             if ~isempty(min_chord) % S'il y a un ':'
-%                 chord = strcat(chord(1:min_chord-1), chord(min_chord+1:end));
-%             end
-
-           chroma = mean(obs_m(:, deb_trame:fin_trame), 2); % On moyenne les chromas correspondant
-
-            % Matrice d'observations des accords
-            if isKey(Accords_mat, chord) % s'il est déjà présent
-                Accords_mat(chord) = [Accords_mat(chord) obs_m(:, deb_trame:fin_trame)];
-            else
-                Accords_mat(chord) = obs_m(:, deb_trame:fin_trame);
-            end
+            chroma = mean(obs_m(:, deb_trame:fin_trame), 2); % On moyenne les chromas correspondant
             
             % Déjà rencontré ? - Accords pour chaque morceau
             if isKey(accords, chord) % s'il est déjà présent
@@ -167,12 +153,12 @@ cd ../
 fprintf(1, '\n\nCalcul des probabilités de passage:\n\n');
 prob_keys = Proba.keys();
 
-% for k = 1:length(prob_keys)
-%     pattern = '/(.*)';
-%     chord = char(regexp(char(prob_keys(k)), pattern, 'match')); % cast to string and get /***
-%     chord = chord(2:end); % cast to string
-%     Proba(char(prob_keys(k))) = Proba(char(prob_keys(k)))/Proba_tot(chord);
-% end
+for k = 1:length(prob_keys)
+    pattern = '/(.*)';
+    chord = char(regexp(char(prob_keys(k)), pattern, 'match')); % cast to string and get /***
+    chord = chord(2:end); % cast to string
+    Proba(char(prob_keys(k))) = Proba(char(prob_keys(k)))/Proba_tot(chord);
+end
 
 end
 
