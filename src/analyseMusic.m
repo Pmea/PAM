@@ -25,14 +25,17 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 1
+if 0
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
     % Read Excel file
-    [numbers, pieces_id, everything] = xlsread('Corp_Beatles.xls', 'A:A'); % Get ID of pieces
-    [numbers, pieces_name, everything] = xlsread('Corp_Beatles.xls', 'E:E'); % Get name of pieces
-
+    %[numbers, pieces_id, everything] = xlsread('Corp_Beatles.xls', 'A:A'); % Get ID of pieces
+    %[numbers, pieces_name, everything] = xlsread('Corp_Beatles.xls', 'E:E'); % Get name of pieces
+    corres_piste_titre=tdfread('Corp_Beatles.csv', 'semi');
+    pieces_id= corres_piste_titre.mediaID;
+    pieces_name= corres_piste_titre.title;
+    
 	% Parcours de la base de référence musicale
     cd ./The_Beatles % va dans l'ensemble des albums
     albums = dir(pwd); % récupère tous les albums
@@ -74,15 +77,29 @@ if 1
             [y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
             rmpath(directory_function);
             tempo = mean(tempo_v)
-            figure();
-            plot(1:length(tempo_v), tempo_v);
+%             figure();
+%             plot(1:length(tempo_v), tempo_v);
             
             % Création de la base chromas et observation chromas 
             file_id = file_id(1:end-4); % Removes '.wav' at the end
             
             % Map name with excel file
-            [truefalse, index] = ismember(file_id, pieces_id); % Returns the index of the id
-            file_key = lower(pieces_name{index}); % Get piece name in lower case
+            index=1;
+            found=false;
+            while strcmp(pieces_id(index,1:length(file_id)), file_id) ~= 1
+                index= index+1;
+            end
+            if strcmp(pieces_id(index,1:length(file_id)), file_id) ~= 1
+                warning('Pas de correspondance trouve entre le fichier et les noms de morceaux');
+            end
+            
+            %[truefalse, index] = ismember(file_id, pieces_id); % Returns the index of the id  
+            ind_fin= length(pieces_name(index,:));
+            while strcmp(pieces_name(index,ind_fin), ' ')
+                ind_fin= ind_fin - 1;
+            end
+            
+            file_key = lower(pieces_name(index,1:ind_fin)); % Get piece name in lower case
             
             str = sprintf('%s: Calcul de la matrice des observations chroma\n', file_key);
             fprintf(1, str);
@@ -195,5 +212,6 @@ if 1
 else
 	load(FILE_s.EXPE1_MUSIC);
 end
+
 
 

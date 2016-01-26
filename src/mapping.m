@@ -29,7 +29,12 @@ Proba_tot = containers.Map(); % Dictionnaire contenant le nombre total d'évèneme
 % Parcours de la base de référence musicale
 cd ./The_Beatles_annot % va dans l'ensemble des annotations des albums
 albums = dir(pwd); % récupère les annotations de tous les albums
-albums = albums(3:end); % Enlève le '.' et le '..'
+
+ind_deb= 1;
+while strcmp(albums(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
+    ind_deb= ind_deb + 1;
+end
+albums = albums(ind_deb:end);
 
 for k = 1:length(albums) % On parcourt les albums
     cd(albums(k).name) % Va dans l'album
