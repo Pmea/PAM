@@ -6,9 +6,9 @@
 \usepackage{graphicx}
 
 \pagestyle{plain} 
-%Langue utilisée
+%Langue utilisï¿½e
 \usepackage[francais]{babel}
-\usepackage[T1]{fontenc}% c'est très utile !!
+\usepackage[T1]{fontenc}% c'est trï¿½s utile !!
 \usepackage{titlesec,lastpage}
 \usepackage{caption}
 \captionsetup{position=below}
@@ -16,7 +16,7 @@
 
 \title{ATIAM PAM : AutoDj-Rapport\\
 Etat de l'art }
-\author{Maxime Arbisa, Léo Thirifays, Samuel Bell-Bell,Pierre Mahé,}
+\author{Maxime Arbisa, Lï¿½o Thirifays, Samuel Bell-Bell,Pierre Mahï¿½,}
 \maketitle
 
 
@@ -33,66 +33,66 @@ Etat de l'art }
 
 \section{Alignement des accords}
 \subsection{Accords}
-Nous lirons les accords simplifiés extraits des morceaux avec la notation simplifiée sous forme de notation américaine des accords uniquement majeurs ou mineurs des demi-tons.
+Nous lirons les accords simplifiï¿½s extraits des morceaux avec la notation simplifiï¿½e sous forme de notation amï¿½ricaine des accords uniquement majeurs ou mineurs des demi-tons.
 
-\subsubsection{Matrice de similarité}
-Nous avons deux type de matrices de similarité: 
-une naïve basé sur match (+10) et mismatch (-10)
-l'autre matrice de similarité est basée sur la distance des échelles chromatique entre deux accords.
+\subsubsection{Matrice de similaritï¿½}
+Nous avons deux type de matrices de similaritï¿½: 
+une naï¿½ve basï¿½ sur match (+10) et mismatch (-10)
+l'autre matrice de similaritï¿½ est basï¿½e sur la distance des ï¿½chelles chromatique entre deux accords.
 
 \subsection{Algorithme de Needleman-Wunsch}
 \subsubsection{Presentation de l'algorithme}
-Cette algorithme a pour but de présenter l'alignement maximal global entre deux chaînes de caractère, il a été dévellopé
-pour trouver les similarité entre les acides aminé de deux protéines. Nous réutilisons ce principe pour calculer l'alignement global maximal entre les accords de deux morceaux.\\
-Cette algorithme est programmé sous forme de programmation dynamique, il assure donc l'optimalité de la solution et est beaucoup plus rapide qu'un algorithme naïf car la solution dépend des sous solutions précédentes.\\
-Il existe 3 opérations possibles pour  construire de la matrice de coût entre les deux chaîne de caractère:
+Cette algorithme a pour but de prï¿½senter l'alignement maximal global entre deux chaï¿½nes de caractï¿½re, il a ï¿½tï¿½ dï¿½vellopï¿½
+pour trouver les similaritï¿½ entre les acides aminï¿½ de deux protï¿½ines. Nous rï¿½utilisons ce principe pour calculer l'alignement global maximal entre les accords de deux morceaux.\\
+Cette algorithme est programmï¿½ sous forme de programmation dynamique, il assure donc l'optimalitï¿½ de la solution et est beaucoup plus rapide qu'un algorithme naï¿½f car la solution dï¿½pend des sous solutions prï¿½cï¿½dentes.\\
+Il existe 3 opï¿½rations possibles pour  construire de la matrice de coï¿½t entre les deux chaï¿½ne de caractï¿½re:
  \begin{itemize}
-\item match : les deux lettres courantes sont les mêmes;
-\item mismatch : les deux lettres courantes ne sont pas les mêmes;
-\item indel (INsertion ou DELetion) : une lettre est alignée avec un gap dans l'autre chaine de caractère
+\item match : les deux lettres courantes sont les mï¿½mes;
+\item mismatch : les deux lettres courantes ne sont pas les mï¿½mes;
+\item indel (INsertion ou DELetion) : une lettre est alignï¿½e avec un gap dans l'autre chaine de caractï¿½re
 \end{itemize}
 
-Pour remplir la matrice on remplit la première colonne et la première ligne avec le poids d'un indel * positionColonne ou indel * positionLigne en fonction.
-On se base ensuite sur le principe d'optimalité des opérations possibles pour remplir le reste de la matrice de coût M et S, la matrice de similarité.
+Pour remplir la matrice on remplit la premiï¿½re colonne et la premiï¿½re ligne avec le poids d'un indel * positionColonne ou indel * positionLigne en fonction.
+On se base ensuite sur le principe d'optimalitï¿½ des opï¿½rations possibles pour remplir le reste de la matrice de coï¿½t M et S, la matrice de similaritï¿½.
 \begin{equation*}
 M_{i,j} = max(M_{i-1,j-1}+ S(A_{i},B_{j}),M_{i,j-1} + d , M_{i-1,j} + d)
 \end{equation*}
 \underline{Backtracking} :
-Tout en construisant la matrice de coût , on construit une matrice d'antécédents pour savoir d'où l'on vient par rapport à la case courante avec les mouvements représentant les matchs (diagonal), mismatchs (gauche) et Indel (monter).
+Tout en construisant la matrice de coï¿½t , on construit une matrice d'antï¿½cï¿½dents pour savoir d'oï¿½ l'on vient par rapport ï¿½ la case courante avec les mouvements reprï¿½sentant les matchs (diagonal), mismatchs (gauche) et Indel (monter).
 
 \subsection{Smith-Waterman}
 \subsubsection{Presentation de l'algorithme}
-À la différence de Needleman-Wunsch , Smith-Warerman a pour but de présenter l'alignement maximal local entre deux chaînes de caractère. La matrice de coût Needleman-Wunsch est non-negative d'où la règle ajoutée par rapport a Needleman-Wunsch de mettre a 0 si le score de l'élément suivant deviens négatif.
-La première ligne et la première colonne est initialisée a 0.
+ï¿½ la diffï¿½rence de Needleman-Wunsch , Smith-Warerman a pour but de prï¿½senter l'alignement maximal local entre deux chaï¿½nes de caractï¿½re. La matrice de coï¿½t Needleman-Wunsch est non-negative d'oï¿½ la rï¿½gle ajoutï¿½e par rapport a Needleman-Wunsch de mettre a 0 si le score de l'ï¿½lï¿½ment suivant deviens nï¿½gatif.
+La premiï¿½re ligne et la premiï¿½re colonne est initialisï¿½e a 0.
 \begin{equation*}
 M_{i,j} = max(M_{i-1,j-1}+ S(A_{i},B_{j}),M_{i,j-1} + d , M_{i-1,j} + d , 0)
 \end{equation*}
 
-\underline{Backtracking} On cherche la position où se trouve le ou les maximums de la matrice de coût puis en suivant la matrice d'antécédents à partir de la position trouvée, on parcourt jusqu'à la rencontre d'un élément de la matrice de coût à zéro. On récupère alors cette chaine. 
+\underline{Backtracking} On cherche la position oï¿½ se trouve le ou les maximums de la matrice de coï¿½t puis en suivant la matrice d'antï¿½cï¿½dents ï¿½ partir de la position trouvï¿½e, on parcourt jusqu'ï¿½ la rencontre d'un ï¿½lï¿½ment de la matrice de coï¿½t ï¿½ zï¿½ro. On rï¿½cupï¿½re alors cette chaine. 
 
 
 \subsection{Affine GAP Cost}
-Nous avons commencé par un linear cost, affine gap cost , permet de construire deux ssquences pas parfaitement similaire mais sans trou avec un indel au milieu.\\
-En effet l'affine gap cost est basé sur le séparation du gap cost en 2 : open gap et ext gap.\\
-Cette méthode complexifie le backtracking de Smith-Waterman et Needleman-Wunsch qui demande alors l'existence de trois matrices de traceback.
+Nous avons commencï¿½ par un linear cost, affine gap cost , permet de construire deux ssquences pas parfaitement similaire mais sans trou avec un indel au milieu.\\
+En effet l'affine gap cost est basï¿½ sur le sï¿½paration du gap cost en 2 : open gap et ext gap.\\
+Cette mï¿½thode complexifie le backtracking de Smith-Waterman et Needleman-Wunsch qui demande alors l'existence de trois matrices de traceback.
 
-\section{Transformée à Q-constante (CQT)}
-La transformée à Q-constante est là pour altérer au problème de résolution de la transformée de Fourier on utilise la Q-constante-transformation qui change la résolution fréquentielle en fonction des fréquence considérées.
+\section{Transformï¿½e ï¿½ Q-constante (CQT)}
+La transformï¿½e ï¿½ Q-constante est lï¿½ pour altï¿½rer au problï¿½me de rï¿½solution de la transformï¿½e de Fourier on utilise la Q-constante-transformation qui change la rï¿½solution frï¿½quentielle en fonction des frï¿½quence considï¿½rï¿½es.
 \begin{equation*}
 Q= \frac{f_{k}}{f_{k+1}-f_{k}} 
 \end{equation*}
 \begin{equation*}
 Q =\frac{f_{k}}{B_{w}} = \frac{f_{k}}{C_{w}/L} = \frac{f_{k}*L}{C_{w}}
 \end{equation*}
-En partant de la TFCT mais où la fenêtre varie pour obtenir un facteur de qualité constante. Ce facteur est basé sur des propriétés de perception de l'oreille humaine.
+En partant de la TFCT mais oï¿½ la fenï¿½tre varie pour obtenir un facteur de qualitï¿½ constante. Ce facteur est basï¿½ sur des propriï¿½tï¿½s de perception de l'oreille humaine.
 \begin{equation*}
 X(n,k) = \sum_{n=0}^{N-1}x(n)W(n-m) e^{- \frac{2j\pi m k}{N}}
 \end{equation*}
 
 
 \subsection{CQT classique}
-L'algorithme pour créer une CQT classique se déroule en trois étapes : 
-Dans un premier temps on calcule me kernel de la Q-transform, où un élément du kernel est le produit entre la fenêtre de la Q-constante actuelle et de l'exponentielle.
+L'algorithme pour crï¿½er une CQT classique se dï¿½roule en trois ï¿½tapes : 
+Dans un premier temps on calcule me kernel de la Q-transform, oï¿½ un ï¿½lï¿½ment du kernel est le produit entre la fenï¿½tre de la Q-constante actuelle et de l'exponentielle.
 \begin{equation*}
 X(k) = \frac{1}{N}\sum_{n=0}^{N-1}x(n)W(n-m) e^{- \frac{2j\pi m k}{N}} ~ kern(n) = W(n-m) e^{- \frac{2j\pi m k}{N}}
 \end{equation*}
@@ -100,39 +100,39 @@ avec
 \begin{equation*}
 N= N[k] = Q\frac{f_{s}}{f_{k}}
 \end{equation*}
-Ensuite on fenêtre le Kernel avec une fenêtre de Hann. 
+Ensuite on fenï¿½tre le Kernel avec une fenï¿½tre de Hann. 
 Enfin on multiplie le signal par le kernel $\sum_{n=0}^{Nb_k}x[t] * kern(k) $
-La complexité temporelle de cette version s'avère très grande, on multiplie à chaque fois les trames de la TFCT par un kernel qui a de nombreux éléments, de plus le facteur de qualité Q doit avoir un nombre de période plutôt grand pour être précis, le nombre de calculs est donc de Q*nbElemKern*nbframe. De plus, l'hopsize doit faire la taille de la plus petit element du kernel sur trois (puisqu'une fenêtre fait 75\% de recouvrement).
+La complexitï¿½ temporelle de cette version s'avï¿½re trï¿½s grande, on multiplie ï¿½ chaque fois les trames de la TFCT par un kernel qui a de nombreux ï¿½lï¿½ments, de plus le facteur de qualitï¿½ Q doit avoir un nombre de pï¿½riode plutï¿½t grand pour ï¿½tre prï¿½cis, le nombre de calculs est donc de Q*nbElemKern*nbframe. De plus, l'hopsize doit faire la taille de la plus petit element du kernel sur trois (puisqu'une fenï¿½tre fait 75\% de recouvrement).
 
 \subsection{CQT efficiente}
-Une deuxième méthode appelée Q-transfort-efficient , les deux premières étapes sont semblables à la précédente. Ensuite on applique une TFCT au signal x et on utilise le produit spectral entre la $KERN = TF(kern)$. Puis, puisqu'une convolution en temporel est un produit en fréquence on calcule $X(k,n)*KERN(f)$.\\
-Cette méthode permet de gagner une grande complexité temporelle par rapport à la méthode précédente.
+Une deuxiï¿½me mï¿½thode appelï¿½e Q-transfort-efficient , les deux premiï¿½res ï¿½tapes sont semblables ï¿½ la prï¿½cï¿½dente. Ensuite on applique une TFCT au signal x et on utilise le produit spectral entre la $KERN = TF(kern)$. Puis, puisqu'une convolution en temporel est un produit en frï¿½quence on calcule $X(k,n)*KERN(f)$.\\
+Cette mï¿½thode permet de gagner une grande complexitï¿½ temporelle par rapport ï¿½ la mï¿½thode prï¿½cï¿½dente.
 
 \section{Tracking de beat}
-Pour suivre l'évolution du tempo d'un morceau au cours du temps nous avons utilisé le schéma suivant  :\\
+Pour suivre l'ï¿½volution du tempo d'un morceau au cours du temps nous avons utilisï¿½ le schï¿½ma suivant  :\\
 
-Les onsets représente l'attaque du son, pour les détecter on a besoin de la TFCT du signal avec des une fenêtre de 46 ms et un overlap de 10 ms (ce qui permet de construire une TFTC à une échelle plutôt proche de la perception humaine).
+Les onsets reprï¿½sente l'attaque du son, pour les dï¿½tecter on a besoin de la TFCT du signal avec des une fenï¿½tre de 46 ms et un overlap de 10 ms (ce qui permet de construire une TFTC ï¿½ une ï¿½chelle plutï¿½t proche de la perception humaine).
 \begin{equation*}
 X(n,k) = \sum_{m=-N/2}^{N/2-1}x(hn+m)w(m) e^{- \frac{2j\pi m k}{N}}
 \end{equation*}
-Il existe plusieurs fonctions de détection de onsets, nous avons utilisé le Spectral Flux (SF) qui se calcul de la manière suivante :
-on calcule la différentiation trame par trame suivie d'une half-wave rectification puis on la somme
+Il existe plusieurs fonctions de dï¿½tection de onsets, nous avons utilisï¿½ le Spectral Flux (SF) qui se calcul de la maniï¿½re suivante :
+on calcule la diffï¿½rentiation trame par trame suivie d'une half-wave rectification puis on la somme
 \begin{equation*}
 SF(n) =  \sum_{m=-N/2}^{N/2-1} H(\mid{X(n,k)|}-\mid{X(n-1,k)|})
 \end{equation*}
 
-Une fois que nous avons notre fonction d'onsets on peut alors construire notre rythmogramme. Pour cela on fait une fonction d'autocorrelation du Spectral Flux sur des trames de 8 secondes. Ensuite on concaténe alors chaque vision temporel voir période
+Une fois que nous avons notre fonction d'onsets on peut alors construire notre rythmogramme. Pour cela on fait une fonction d'autocorrelation du Spectral Flux sur des trames de 8 secondes. Ensuite on concatï¿½ne alors chaque vision temporel voir pï¿½riode
 
-Avec une  FFT à la place d'une autocorrelation on se retrouve dans le domaine fréquentiel, le tempo étant une fréquence, mise a l'échelle on obtient alors les bandes représentant les bpm.\\
+Avec une  FFT ï¿½ la place d'une autocorrelation on se retrouve dans le domaine frï¿½quentiel, le tempo ï¿½tant une frï¿½quence, mise a l'ï¿½chelle on obtient alors les bandes reprï¿½sentant les bpm.\\
 
 
-Une fois le rythmogramme du domaine fréquentiel construit, nous repérons le bpm pour chaque trame. Nous souhaitons alors trouvé les positions de battue réelles dans le morceau en sample. Pour cela il suffit de convoluer chaque trame du Flux Spectral par un peigne de Dirac. On retrouve alors le décalage en récupérant le nombre de sample entre le onset maximal de la trame et le Dirac le plus proche.
-On applique à nouveau sur l'ensemble des frames cette méthode et on retient les positions trouvées.
+Une fois le rythmogramme du domaine frï¿½quentiel construit, nous repï¿½rons le bpm pour chaque trame. Nous souhaitons alors trouvï¿½ les positions de battue rï¿½elles dans le morceau en sample. Pour cela il suffit de convoluer chaque trame du Flux Spectral par un peigne de Dirac. On retrouve alors le dï¿½calage en rï¿½cupï¿½rant le nombre de sample entre le onset maximal de la trame et le Dirac le plus proche.
+On applique ï¿½ nouveau sur l'ensemble des frames cette mï¿½thode et on retient les positions trouvï¿½es.
 
 \section{Detune}
-Le détunage est la différence entre une fréquence et la fréquence de note la plus proche, une guitare mal accordé est détuné par exemple.\\
-Pour ce faire nous avons crée un coefficient de détunage, le calcul est simple.\\
-Nous trouvons sur plusieurs petit extraits du même morceau via le Produit Spectral la fréquence qui ressort  entre 200 et 900 Hz afin d'éviter les percussions trop basses ou trop hautes en fréquence. Cette fréquence trouvée est comparée à la note MIDI en fréquence la plus proche qui sera appelée $f_{ref}$ on a donc $coef = f_{trouve}/f_{ref}$ puis on moyenne chacun de ces coefficients par le nombre d'extraits choisis pour avoir un résultat plus stable et réaliste.
+Le dï¿½tunage est la diffï¿½rence entre une frï¿½quence et la frï¿½quence de note la plus proche, une guitare mal accordï¿½ est dï¿½tunï¿½ par exemple.\\
+Pour ce faire nous avons crï¿½e un coefficient de dï¿½tunage, le calcul est simple.\\
+Nous trouvons sur plusieurs petit extraits du mï¿½me morceau via le Produit Spectral la frï¿½quence qui ressort  entre 200 et 900 Hz afin d'ï¿½viter les percussions trop basses ou trop hautes en frï¿½quence. Cette frï¿½quence trouvï¿½e est comparï¿½e ï¿½ la note MIDI en frï¿½quence la plus proche qui sera appelï¿½e $f_{ref}$ on a donc $coef = f_{trouve}/f_{ref}$ puis on moyenne chacun de ces coefficients par le nombre d'extraits choisis pour avoir un rï¿½sultat plus stable et rï¿½aliste.
 
 %\section{Bibliographie}
 %\bibliographystyle{plain} % Le style est mis entre accolades.
