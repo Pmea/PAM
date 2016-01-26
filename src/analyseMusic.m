@@ -25,7 +25,7 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 0
+if 1
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
@@ -162,6 +162,8 @@ if 1
     end
     albums = albums(ind_deb:end);
     
+    c_morceaux= cell();
+    
     for k = 1:1%length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
@@ -169,6 +171,7 @@ if 1
         while strcmp(morceaux(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
             ind_deb= ind_deb + 1;
         end
+        
         morceaux = morceaux(ind_deb:end);
         
         for k = 1:1%length(morceaux) % On parcourt les morceaux
@@ -200,6 +203,15 @@ if 1
             
             % On le met dans le dictionnaire
             Chords(file_key) = list_chords;
+            
+            % creation de la structure
+            nouv_morceau.name= name_file;
+            nouv_morceau.fe= sr_hz;
+            nouv_morceau.accords= list_chords;
+            nous_morceau.temps_accords= list_times;
+            
+            % concatenation de la structure
+            c_morceaux= [c_morceaux nouv_morceau];
         end
         
         cd ../ % Sort de l'album
