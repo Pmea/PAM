@@ -193,8 +193,8 @@ if 1
             % Création de la base chromas et observation chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
             str = sprintf('%s: Analyse des accords\n', file_key);
-            fprintf(1, str);
-
+            fprintf(1, str);   
+            
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             L_n				= round(L_sec*4*sr_hz); % window duration in points
             STEP_n			= round(STEP_sec*4*sr_hz); % Hop size in points
@@ -213,7 +213,6 @@ if 1
             % concatenation de la structure
             c_morceaux= [c_morceaux nouv_morceau];
         end
-        
         cd ../ % Sort de l'album
     end
     % Fin du parcours des fichiers audio
@@ -225,5 +224,48 @@ else
 	load(FILE_s.EXPE1_MUSIC);
 end
 
+%% recuperation chroma de reference
 
+m_ordre_chords=[          
+    'C  ';
+    'C# ';% meme note
+    'Db ';%
+    'D  ';
+    'D# ';%
+    'Eb ';%
+    'E  ';
+    'F  ';
+    'F# ';%
+    'Gb ';%
+    'G  ';
+    'G# ';%
+    'Ab ';%
+    'A  ';
+    'A# ';%
+    'Bb ';%
+    'B  ';
+     
+    'Cm ';        % accord mineur
+    'C#m';%
+    'Dbm';%
+    'Dm ';
+    'D#m';%
+    'Ebm';%
+    'Em ';
+    'Fm ';
+    'F#m';%
+    'Gbm';%
+    'Gm ';
+    'G#m';%
+    'Abm';%
+    'Am ';
+    'A#m';%
+    'Bbm';%
+    'Bm ';
+    ];
 
+for k = 1: size(m_ordre_chords,1)
+    c_chroma_ref= Accords_mat(m_ordre_chords(k));
+end
+
+%clearvars -except c_chroma_ref c_morceaux  %pour la version final
