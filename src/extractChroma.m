@@ -30,7 +30,6 @@ for k = 1:length(n)
     H_m(k,:) = 1/2*tanh(pi*(1-2*abs(n(k)-data_midi_v))) + 1/2;
     
     l = mod(n(k), 12)+1; % same class's semtitones
-    %l = mod(n(k), 12)+1;
     C_m(l,:) = C_m(l,:)+H_m(k,:);
 end
 

@@ -1,4 +1,4 @@
-function [list_chords, list_times] = extractChroma(data_v, sr_hz, L_n, STEP_n, detune, Accords, Proba)
+function [list_chords, list_times] = extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords, Proba)
 % 1) Creates a base of vectors chromas for the file
 % 2) At each time of the audio input signal, extracts an observation vector of type Chroma
 % and compares to the chords in the base

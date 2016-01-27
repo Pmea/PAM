@@ -31,7 +31,7 @@ end
 probInit_v = 1/length(keys_chords)*ones(length(keys_chords), 1);
 
 %% Probabilités de passage inter-accords
-probTrans_m = f_cycle_des_quintes()
+probTrans_m = f_cycle_des_quintes();
 
 %% Likehood proba
 % Calcul de la likehood pour chaque accord - on a la proba d'avoir un

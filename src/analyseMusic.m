@@ -70,14 +70,6 @@ if 0
 %             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
 %             detune = 1;
 
-%             % Calcul du tempo
-%             addpath(directory_function);
-%             [y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
-%             rmpath(directory_function);
-%             tempo = mean(tempo_v);
-%             figure();
-%             plot(1:length(tempo_v), tempo_v);
-
             % Création de la base chromas et observation chromas 
             file_id = file_id(1:end-4); % Removes '.wav' at the end
             
@@ -125,7 +117,7 @@ end
 
 
 %% Mapping avec les annotations
-if 0
+if 1
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
     [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec);    
     
@@ -140,11 +132,21 @@ else
     load(FILE_s.EXPE1_PROBA_CHORDS);
 end
 
-Accords_mat_2 = containers.Map(); % Dictionnaire contenant les moyennes des chromas des accords
+figure();
+imagesc(Accords('C  '));
+
+figure();
+imagesc(Accords_mat('C  '));
+
+% Dictionnaire contenant les moyennes des chromas des accords
+Accords_mat_2 = containers.Map(); 
 keykey = Accords_mat.keys();
 for k = 1:length(keykey)
     Accords_mat_2(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
 end
+
+figure();
+imagesc(Accords_mat_2('C  '));
 
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
