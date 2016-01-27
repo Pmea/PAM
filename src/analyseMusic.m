@@ -25,7 +25,7 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 0
+if 1
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
