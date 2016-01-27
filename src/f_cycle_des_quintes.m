@@ -66,9 +66,9 @@ for i=1:24
     for j=1:24
         %pour zeros il y a probabilité que..
       if   mat_poids_24(i,j)==0
-        mat_temp(i,j) =  2;
+        mat_temp(i,j) =  0; %prob max
       end  
-      if   mat_poids_24(i,j)~=0
+      if   mat_poids_24(i,j)~=-1
         mat_temp(i,j) =  7- mat_poids_24(i,j);
       end
       if   mat_temp(i,j)==0
