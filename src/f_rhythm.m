@@ -132,6 +132,10 @@ for k = 1 : Nt
         deb_temp = floor(deb_s + pos_s_v(k) - period_s/3);
         fin_temp = floor(deb_s + pos_s_v(k) + period_s/3);
 
+        if(fin_temp > length(y_v))
+            fin_temp =  length(y_v);
+        end
+
         y_temp = y_v(deb_temp: fin_temp) ;
         is_dir = find(y_temp ~= 0);
         if length(is_dir) >= 2

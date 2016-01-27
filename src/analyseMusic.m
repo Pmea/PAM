@@ -188,9 +188,7 @@ if 1
             
             figure();
             plot(tempo_v);
-            
-            figure();
-            plot(y_v);
+            med = median(tempo_v)
             
             % Création de la base chromas et calcul des observations chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
