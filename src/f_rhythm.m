@@ -1,4 +1,4 @@
-function [y_v,tempo_v] = f_rhythm (x_v, Fs)
+function [y_v, tempo_v] = f_rhythm (x_v, Fs)
 
 % Facteur de décimation
 factor = round(Fs/100);
@@ -131,6 +131,7 @@ for k = 1 : Nt
     if k > 1
         deb_temp = floor(deb_s + pos_s_v(k) - period_s/3);
         fin_temp = floor(deb_s + pos_s_v(k) + period_s/3);
+
         y_temp = y_v(deb_temp: fin_temp) ;
         is_dir = find(y_temp ~= 0);
         if length(is_dir) >= 2

@@ -45,7 +45,7 @@ end
 
 
 %% Viterbi
-path_v = viterbi4(probInit_v, probObs_m, probTrans_m);
+path_v = viterbi(probInit_v, probObs_m, probTrans_m);
 
 end
 

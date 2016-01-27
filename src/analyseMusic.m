@@ -25,7 +25,7 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 1
+if 0
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
@@ -117,7 +117,7 @@ end
 
 
 %% Mapping avec les annotations
-if 1
+if 0
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
     [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec);    
     
@@ -132,12 +132,6 @@ else
     load(FILE_s.EXPE1_PROBA_CHORDS);
 end
 
-figure();
-imagesc(Accords('C  '));
-
-figure();
-imagesc(Accords_mat('C  '));
-
 % Dictionnaire contenant les moyennes des chromas des accords
 Accords_mat_2 = containers.Map(); 
 keykey = Accords_mat.keys();
@@ -145,16 +139,13 @@ for k = 1:length(keykey)
     Accords_mat_2(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
 end
 
-figure();
-imagesc(Accords_mat_2('C  '));
-
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
 if 1
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
 	% Parcours de la base de référence musicale
-    cd ./The_Beatles % va dans l'ensemble des albums de la bibliothèque musicale
+    cd ./The_Beatles_test % va dans l'ensemble des albums de la bibliothèque musicale
     albums = dir(pwd); % récupère tous les albums
     ind_deb= 1;
     while strcmp(albums(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
@@ -189,12 +180,23 @@ if 1
             
 %             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
 %             detune = 1;
+
+            % Get file's tempo
+            addpath(directory_function);
+            [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
+            rmpath(directory_function);
             
-            % Création de la base chromas et observation chromas 
+            figure();
+            plot(tempo_v);
+            
+            figure();
+            plot(y_v);
+            
+            % Création de la base chromas et calcul des observations chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
             str = sprintf('%s: Analyse des accords\n', file_key);
             fprintf(1, str);   
-            
+
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             L_n				= round(L_sec*4*sr_hz); % window duration in points
             STEP_n			= round(STEP_sec*4*sr_hz); % Hop size in points

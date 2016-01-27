@@ -1,20 +1,26 @@
 function y_v = f_timestretch(x_v, stretch)
 
+%% Parameters
 N = length(x_v);
 N_win = 1024;
 Nfft = N_win;
 
 % Pas d'avancement
 R_n = floor(N_win / 4);
+
 % Pas d'avancement après timestretching (pour reconstitution)
 R_stretch_n = floor(R_n * stretch);
 
 Nt = floor((N - N_win) / R_n);
 
+%% Définition de la fenêtre d'analyse
 ws_v = hann(N_win);
+
 % Normalisation de la fenêtre
 ws_v = ws_v./max(ola(ws_v .* ws_v, R_stretch_n, 30));
 
+
+%% 
 Xtilde_m = f_tfct (x_v, Nfft, N_win, R_n);
 Xtilde_stretched_m = zeros(size(Xtilde_m));
 
