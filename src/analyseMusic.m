@@ -65,7 +65,19 @@ if 1
             addpath(directory_function);
             detune = f_tuning(file_id);
             rmpath(directory_function);
-            
+
+%             % Resample
+%             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
+%             detune = 1;
+
+%             % Calcul du tempo
+%             addpath(directory_function);
+%             [y_v, tempo_v] = f_rhythm(data_v(1:10000), sr_hz);
+%             rmpath(directory_function);
+%             tempo = mean(tempo_v);
+%             figure();
+%             plot(1:length(tempo_v), tempo_v);
+
             % Création de la base chromas et observation chromas 
             file_id = file_id(1:end-4); % Removes '.wav' at the end
             
@@ -113,7 +125,7 @@ end
 
 
 %% Mapping avec les annotations
-if 1
+if 0
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
     [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec);    
     
@@ -128,9 +140,10 @@ else
     load(FILE_s.EXPE1_PROBA_CHORDS);
 end
 
+Accords_mat_2 = containers.Map(); % Dictionnaire contenant les moyennes des chromas des accords
 keykey = Accords_mat.keys();
 for k = 1:length(keykey)
-    Accords_mat(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
+    Accords_mat_2(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
 end
 
 %% Analyser la bibliothèque musicale
@@ -172,8 +185,8 @@ if 1
             detune = f_tuning(name_file);
             rmpath(directory_function);
             
-           % data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
-           % detune = 1;
+%             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
+%             detune = 1;
             
             % Création de la base chromas et observation chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
@@ -183,9 +196,15 @@ if 1
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             L_n				= round(L_sec*4*sr_hz); % window duration in points
             STEP_n			= round(STEP_sec*4*sr_hz); % Hop size in points
-            [list_chords, list_times]	= extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords_mat, Proba);
+            [list_chords, list_times]	= extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords_mat_2, Proba);
             rmpath(directory_function);
             
+            % Détection d'accords par HMM
+            addpath(directory_function); % Ajoute le répertoire pour runner la fonction
+            obs_m = extractChroma(data_v, sr_hz, L_n, STEP_n, detune);
+            path_v = HMM(Accords_mat, obs_m);
+            rmpath(directory_function); % Ajoute le répertoire pour runner la fonction
+
             % On le met dans le dictionnaire
             Chords(file_key) = list_chords;
             
