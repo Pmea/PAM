@@ -91,8 +91,8 @@ for sliding = 1:STEP_n:ending
     obs_m(:, nb_trames) = C_m*trame_fft_v;
     
     %% Normalisation (à enlever ?)
-%    obs_m(:, nb_trames) = obs_m(:, nb_trames)/norm(obs_m(:, nb_trames));
-%    
+    obs_m(:, nb_trames) = obs_m(:, nb_trames)/norm(obs_m(:, nb_trames));
+    
     %%
     nb_trames = nb_trames + 1;
 end
