@@ -1,4 +1,4 @@
-function [m_seuil, m_penalty, m_corres]= f_creer_penalty_et_corres(ext_gap, open_gap)
+function [m_penalty, m_corres]= f_creer_penalty_et_corres(ext_gap, open_gap)
 
 m_corres=[
     'C   1';
@@ -38,12 +38,11 @@ m_corres=[
     'Bm 24';
     ];
 
-match= 10;
-mismatch= -10;
+match= 0;
+mismatch=  -1.5731;
 
 m_penalty= ones(size(m_corres,1)) * mismatch;
 m_penalty= m_penalty + diag(ones(size(m_corres,1),1)* (match-mismatch));
 
-m_seuil= 0; % que choisir ?
 
 end

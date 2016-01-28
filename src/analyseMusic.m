@@ -141,11 +141,11 @@ end
 
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
-if 1
+if 0
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
 	% Parcours de la base de référence musicale
-    cd ./The_Beatles_test % va dans l'ensemble des albums de la bibliothèque musicale
+    cd ./The_Beatles % va dans l'ensemble des albums de la bibliothèque musicale
     albums = dir(pwd); % récupère tous les albums
     ind_deb= 1;
     while strcmp(albums(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
@@ -182,13 +182,13 @@ if 1
 %             detune = 1;
 
             % Get file's tempo
-            addpath(directory_function);
-            [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
-            rmpath(directory_function);
-            
-            figure();
-            plot(tempo_v);
-            med = median(tempo_v)
+%             addpath(directory_function);
+%             [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
+%             rmpath(directory_function);
+%             
+%             figure();
+%             plot(tempo_v);
+%             med = median(tempo_v)
             
             % Création de la base chromas et calcul des observations chromas 
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
@@ -272,9 +272,11 @@ m_ordre_chords=[
     ];
 
 for k = 1: size(m_ordre_chords,1)
-    disp(m_ordre_chords(k,:));
-    c_chroma_ref{k}= Accords_mat(m_ordre_chords(k,:));
-    imagesc(c_chroma_ref{k});
+    if isKey(Accords_mat_2, m_ordre_chords(k,:))
+        disp(m_ordre_chords(k,:));
+        c_chroma_ref{k}= Accords_mat_2(m_ordre_chords(k,:));
+        imagesc(c_chroma_ref{k});
+    end
 end
 
 %clearvars -except   %pour la version final
