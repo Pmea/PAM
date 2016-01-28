@@ -102,7 +102,10 @@ for k = 1:length(albums) % On parcourt les albums
                     chord = [chord(1), '  '];
                 end
             else % Cas mineur, on enlève le ':'
-                chord = strcat(chord(1:min_chord-1), 'm');                                    
+                chord = strcat(chord(1:min_chord-1), 'm');
+                if chord(2) ~= 'b' && chord(2) ~= '#'
+                    chord = [chord(1:2), ' '];
+                end
             end
             
             % Mapping # - b
