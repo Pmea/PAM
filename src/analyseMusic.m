@@ -158,14 +158,14 @@ if 1
     for k = 1:length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
-        ind_deb= 1;
+        ind_deb = 1;
         while strcmp(morceaux(ind_deb).name(1), '.')   % Enlève le '.', le '..' et le '._corp_...'
             ind_deb= ind_deb + 1;
         end
         
         morceaux = morceaux(ind_deb:end);
         
-        for k = 1:length(morceaux) % On parcourt les morceaux
+        for k = 1:1%length(morceaux) % On parcourt les morceaux
             % On obtient name_file = name.mp3
             name_file = morceaux(k).name;
             
@@ -186,18 +186,22 @@ if 1
             [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
             rmpath(directory_function);
             
-            figure();
-            plot(tempo_v);
-            med = median(tempo_v)
+            med = median(tempo_v); % Get BPM
+            dir1_v = find(y_v ~= 0); % Get onsets
             
-            % Création de la base chromas et calcul des observations chromas 
+            % Création de la base chromas et calcul des observations chromas           
+            % paramètres pour la détection sur le rythme
+            L_sec					= 60/med;	% --- Analysis window duration in seconds
+            STEP_sec				= L_sec/2;	% --- Analysis hop size in seconds
+            data_v = data_v(dir1_v(1):end); % Le morceau démarre sur le premier onset
+            
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
             str = sprintf('%s: Analyse des accords\n', file_key);
             fprintf(1, str);   
 
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
-            L_n				= round(L_sec*4*sr_hz); % window duration in points
-            STEP_n			= round(STEP_sec*4*sr_hz); % Hop size in points
+            L_n				= round(L_sec*sr_hz); % window duration in points
+            STEP_n			= round(STEP_sec*sr_hz); % Hop size in points
             [list_chords, list_times]	= extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords_mat_2, Proba);
             rmpath(directory_function);
             

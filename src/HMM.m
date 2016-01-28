@@ -35,17 +35,25 @@ probTrans_m = f_cycle_des_quintes();
 
 %% Likehood proba
 % Calcul de la likehood pour chaque accord - on a la proba d'avoir un
-% chroma sachant l'accord
+% chroma sachant l'accord - Accords rangés dans l'ordre alphabétique
 probObs_m = zeros(length(keys_chords), size(obs_m, 2)); % Dimensions accords * nb_trames
+probObs_m_2 = zeros(length(keys_chords), size(obs_m, 2)); % Dimensions accords * nb_trames
+
 for k = 1:size(obs_m, 2) % Boucle sur les trames
     for h = 1:length(keys_chords) % Boucle sur les accords
-        probObs_m(h,k) = mvnpdf(obs_m(:,k)', parameters_gaussian{h}(1,:), parameters_gaussian{h}(2:end,:));
+        probObs_m_2(h,k) = mvnpdf(obs_m(:,k)', parameters_gaussian{h}(1,:), parameters_gaussian{h}(2:end,:));
     end
+    probObs_m_2(:,k) = probObs_m_2(:,k)/sum(probObs_m_2(:,k)); % Normalisée
 end
 
+for h = 1:length(keys_chords) % Boucle sur les accords
+    probObs_m(h,:) = (mvnpdf(obs_m', parameters_gaussian{h}(1,:), parameters_gaussian{h}(2:end,:)))';
+end
 
 %% Viterbi
-path_v = viterbi(probInit_v, probObs_m, probTrans_m);
+path_v = viterbi(probInit_v, probObs_m_2, probTrans_m);
+
+keyboard
 
 end
 
