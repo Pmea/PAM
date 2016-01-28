@@ -109,12 +109,16 @@ for k = 1:length(albums) % On parcourt les albums
             
             % Mapping # - b
             if length(chord) > 1 && chord(2) == '#'
-                chord(1) = char(chord(1)+1); % lettre supérieure
+                if chord(1) == 'G'
+                    chord(1) = 'A';
+                else
+                    chord(1) = char(chord(1)+1); % lettre supérieure
+                end
                 chord(2) = 'b';
             end
             
-            if chord(1) == 'H'
-                display(name_file);
+            if chord(1) == 'N'
+                break;
             end
             
 %             min_chord = strfind(chord, ':'); % renvoie l'index du mineur

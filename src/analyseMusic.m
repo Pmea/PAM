@@ -136,12 +136,12 @@ end
 Accords_mat_2 = containers.Map(); 
 keykey = Accords_mat.keys();
 for k = 1:length(keykey)
-    Accords_mat_2(char(keykey(k))) = mean(Accords_mat(char(keykey(k))),2);
+    Accords_mat_2(char(keykey(k))) = nanmean(Accords_mat(char(keykey(k))),2);
 end
 
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
-if 0
+if 1
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
 	% Parcours de la base de référence musicale
@@ -210,7 +210,13 @@ if 0
             obs_m = extractChroma(data_v, sr_hz, L_n, STEP_n, detune);
             path_v = HMM(Accords_mat, obs_m);
             rmpath(directory_function); % Ajoute le répertoire pour runner la fonction
-
+    
+            keys_chords = Accords_mat.keys();
+            list_chords_2 = [];
+            for k = 1:length(path_v)
+                list_chords_2 = [list_chords_2 keys_chords(path_v(k))];
+            end
+            
             % On le met dans le dictionnaire
             Chords(file_key) = list_chords;
             
@@ -275,4 +281,4 @@ for k = 1: size(m_ordre_chords,1)
     end
 end
 
-clearvars -except c_chroma_ref c_morceaux %pour la version final
+%clearvars -except c_chroma_ref c_morceaux %pour la version final

@@ -16,7 +16,7 @@ T = size(probObs_m, 2);
 
 %% --- Init
 %probCumul_v(:,1) =  probInit_v .* probObs_m(:,1);
-probCumul_m(:,1) =  log(probInit_v) + log(probObs_m(:,1));
+probCumul_m(:,1) =  log(probInit_v+eps) + log(probObs_m(:,1)+eps);
 
 
 %% --- Forward
@@ -25,8 +25,8 @@ for t=2:T
         % --- tmp_v (S,1)
         %[max_value, max_pos]= max(probCumul_v(:,t-1) .* probTrans_m(:,s));
         %probCumul_m(s,t)    = max_value * probObs(s,t);
-        [max_value, max_pos] = max( log(probCumul_m(:,t-1)) + log(probTrans_m(:,s)) );
-        probCumul_m(s,t)     = max_value + log(probObs_m(s,t));
+        [max_value, max_pos] = max( log(probCumul_m(:,t-1)+eps) + log(probTrans_m(:,s)+eps) );
+        probCumul_m(s,t)     = max_value + log(probObs_m(s,t)+eps);
         forwardPath_m(s,t)   = max_pos;
     end
 end
@@ -41,3 +41,4 @@ for t = T-1:-1:1
     max_pos     = path_v(t);
 end
 
+end

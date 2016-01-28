@@ -9,7 +9,6 @@ function [path_v] = HMM(Accords_mat, obs_m)
 %% Définitions des paramètres
 parameters_gaussian = cell(length(Accords_mat.keys()),1); % Garder les paramètres des gaussiennes 
 keys_chords = Accords_mat.keys(); % Nom des accords
-keys_chords = keys_chords(1:end-3);
 
 % Paramètres pour la likehood
 % chroma_m = zeros(length(keys_chords), 12);
@@ -20,7 +19,7 @@ keys_chords = keys_chords(1:end-3);
 
 for k = 1:length(keys_chords) 
     chroma_m = Accords_mat(char(keys_chords(k)))';
-    parameters_gaussian{k} = [mean(chroma_m); cov(chroma_m)]; % Matrice 13*12 
+    parameters_gaussian{k} = [nanmean(chroma_m); nancov(chroma_m)]; % Matrice 13*12 
                                                               % avec la moyenne sur 
                                                               % la 1ère ligne et la 
                                                               % matrice de covariance 
@@ -52,8 +51,6 @@ end
 
 %% Viterbi
 path_v = viterbi(probInit_v, probObs_m_2, probTrans_m);
-
-keyboard
 
 end
 
