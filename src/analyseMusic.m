@@ -119,7 +119,14 @@ end
 %% Mapping avec les annotations
 if 0
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
-    [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec);    
+    [Accords_morceaux, Accords, Accords_mat, Proba] = mapping(Observations, STEP_sec); 
+    
+    if isKey(Accords_mat, 'N  ')
+        remove(Accords_mat, 'N  ');
+     end
+    if isKey(Accords, 'N  ')
+        remove(Accords, 'N  ');
+    end
     
     % On sauve le dictionnaire
     save(FILE_s.EXPE1_CHORDS_PLAYS);
@@ -141,7 +148,7 @@ end
 
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
-if 0
+if 1
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
 	% Parcours de la base de référence musicale
@@ -204,7 +211,7 @@ if 0
             % Détection d'accords par HMM
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             obs_m = extractChroma(data_v, sr_hz, L_n, STEP_n, detune);
-            path_v = HMM(Accords_mat, obs_m);
+           % path_v = HMM(Accords_mat, obs_m);
             rmpath(directory_function); % Ajoute le répertoire pour runner la fonction
 
             % On le met dans le dictionnaire
@@ -262,12 +269,9 @@ m_ordre_chords=[
     ];
 
 for k = 1: size(m_ordre_chords,1)
-    disp('TESTÉ');
-    disp(m_ordre_chords(k,:));
     if isKey(Accords_mat_2, m_ordre_chords(k,:))
        disp(m_ordre_chords(k,:));
        c_chroma_ref{k}= Accords_mat_2(m_ordre_chords(k,:));
-       %imagesc(c_chroma_ref{k});
     end
 end
 
