@@ -9,7 +9,6 @@ function [path_v] = HMM(Accords_mat, obs_m)
 %% Définitions des paramètres
 parameters_gaussian = cell(length(Accords_mat.keys()),1); % Garder les paramètres des gaussiennes 
 keys_chords = Accords_mat.keys(); % Nom des accords
-keys_chords = keys_chords(1:end-3);
 
 % Paramètres pour la likehood
 % chroma_m = zeros(length(keys_chords), 12);
@@ -20,7 +19,7 @@ keys_chords = keys_chords(1:end-3);
 
 for k = 1:length(keys_chords) 
     chroma_m = Accords_mat(char(keys_chords(k)))';
-    parameters_gaussian{k} = [mean(chroma_m); cov(chroma_m)]; % Matrice 13*12 
+    parameters_gaussian{k} = [nanmean(chroma_m); nancov(chroma_m)]; % Matrice 13*12 
                                                               % avec la moyenne sur 
                                                               % la 1ère ligne et la 
                                                               % matrice de covariance 
@@ -35,17 +34,23 @@ probTrans_m = f_cycle_des_quintes();
 
 %% Likehood proba
 % Calcul de la likehood pour chaque accord - on a la proba d'avoir un
-% chroma sachant l'accord
+% chroma sachant l'accord - Accords rangés dans l'ordre alphabétique
 probObs_m = zeros(length(keys_chords), size(obs_m, 2)); % Dimensions accords * nb_trames
+probObs_m_2 = zeros(length(keys_chords), size(obs_m, 2)); % Dimensions accords * nb_trames
+
 for k = 1:size(obs_m, 2) % Boucle sur les trames
     for h = 1:length(keys_chords) % Boucle sur les accords
-        probObs_m(h,k) = mvnpdf(obs_m(:,k)', parameters_gaussian{h}(1,:), parameters_gaussian{h}(2:end,:));
+        probObs_m_2(h,k) = mvnpdf(obs_m(:,k)', parameters_gaussian{h}(1,:), parameters_gaussian{h}(2:end,:));
     end
+    probObs_m_2(:,k) = probObs_m_2(:,k)/sum(probObs_m_2(:,k)); % Normalisée
 end
 
+for h = 1:length(keys_chords) % Boucle sur les accords
+    probObs_m(h,:) = (mvnpdf(obs_m', parameters_gaussian{h}(1,:), parameters_gaussian{h}(2:end,:)))';
+end
 
 %% Viterbi
-path_v = viterbi(probInit_v, probObs_m, probTrans_m);
+path_v = viterbi(probInit_v, probObs_m_2, probTrans_m);
 
 end
 

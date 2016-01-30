@@ -42,8 +42,7 @@ for k = 1:length(albums) % On parcourt les albums
                            % pour chaque album
     
     for k = 1:length(annots) % On parcourt les annotations de chaque morceaux
-        name_file = annots(k).name;
-        disp(name_file);        
+        name_file = annots(k).name;        
         
         % Read annotations
         fileID = fopen(name_file, 'r'); % read file
@@ -110,13 +109,21 @@ for k = 1:length(albums) % On parcourt les albums
             
             % Mapping # - b
             if length(chord) > 1 && chord(2) == '#'
+<<<<<<< HEAD
                 if strcmp(chord(1), 'G')
+=======
+                if chord(1) == 'G'
+>>>>>>> f3092472485ad5b14779c9d6262ff7d902075655
                     chord(1) = 'A';
                 else
                     chord(1) = char(chord(1)+1); % lettre supérieure
                 end
                 chord(2) = 'b';
                
+            end
+            
+            if chord(1) == 'N'
+                break;
             end
             
 %             min_chord = strfind(chord, ':'); % renvoie l'index du mineur

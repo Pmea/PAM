@@ -57,6 +57,7 @@ for k=1:size(c_chroma_ref,2)
     c_chroma_ref{k}= mat(v_cor(k),:)';
 end
 
+%% c_chroma_ref matrice de chromas pour les 24 accords
 
 
 

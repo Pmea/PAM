@@ -89,6 +89,7 @@ for sliding = 1:STEP_n:ending
     trame_fft_v = trame_fft_v(1:Nfft/2+1); % Only semi-positive axe interests us    
 
     obs_m(:, nb_trames) = C_m*trame_fft_v;
+    
     nb_trames = nb_trames + 1;
 end
 
