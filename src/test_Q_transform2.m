@@ -1,6 +1,6 @@
 close all;
 clear all;
-[sig_tmp, Fe]= audioread('BEATLES.wav');
+[sig_tmp, Fe]= audioread('audio_gammepno11025.wav');
 sig= sig_tmp;%(1:4*Fe);
  %Fe= 44100;
  %freq=440;
@@ -11,8 +11,8 @@ freq_la_ref= 440;
 
 Q=20;
 
-note_midi_min= 33;  
-note_midi_max= 92; 
+note_midi_min= 45;  
+note_midi_max= 80; 
 
 chroma= f_Q_transform2(sig, Fe, Q, note_midi_min, note_midi_max, freq_la_ref);
 

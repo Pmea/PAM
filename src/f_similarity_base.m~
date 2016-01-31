@@ -11,7 +11,7 @@ function [c_mor, dist,D12, D21]= f_similarity_base(c_mor, c_chroma_ref)
     for ref=1:size(c_mor, 2)          % Le parcours de la base
         for etu=1:size(c_mor, 2)
             disp('Il reste:');
-            disp([ (ref-1)*size(c_mor, 2)+etu , size(c_mor, 2)* size(c_mor, 2)])
+            disp([(ref*size) + etu, size(c_mor, 2)* size(c_mor, 2)])
             % recuperation des chaines
             chaine_ref= c_mor{ref}.accords;
             chaine_ref_inter= f_AccordtoInterval(chaine_ref);

@@ -1,5 +1,8 @@
-function [chemins, score]= f_smith_waterman_Interval(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
+function [chemins, score]= f_smith_waterman2_playlist(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
 
+ moyenne=mean(m_sim(:));
+ m_sim= m_sim - moyenne;
+ 
 %initialisation
 
 len_A= length(chaineA);
@@ -27,10 +30,12 @@ end
 
 for k=2:len_A+1
     for l=2:len_B+1
-        ind_A=recheche_cor(chaineA(k-1));
-        ind_B=recheche_cor(chaineB(l-1));
+%         disp([k l]);
+%         disp([chaineA(k-1) chaineB(l-1)]);
+        ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
+        ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         
-        max_tmp= 0;
+        max_tmp= -Inf;
         c_antes{k,l}(1)= 0;
         c_antes{k,l}(2)= 0;
          
@@ -65,40 +70,72 @@ for k=2:len_A+1
 end
 
 
+
+
+%creation d'un sous espace 
+
+m_sous_res= m_res(floor((len_A+1)/2):len_A+1, 1:floor((len_B+1)/2));
+c_sous_antes= cell(len_A+1 - floor((len_A+1)/2), floor((len_B+1)/2));
+
+for k=1:floor((len_A+1)/2)+1     %copie de la cell
+    for l=1:floor((len_B+1)/2)+1
+        c_sous_antes{k,l}= c_antes{k+(len_A+1 - floor((len_A+1)/2)-1), l};
+        if c_sous_antes{k,l}(1) > 0
+            c_sous_antes{k,l}(1)= c_sous_antes{k,l}(1) - floor((len_A+1)/2);
+        end
+    end
+end
+
+
+for k=1:size(c_sous_antes,1)
+    m_sous_res(k,1)= 0;
+    c_sous_antes{k,1}= [0 0];
+end
+for l=1:size(c_sous_antes,2)
+    m_sous_res(1,l)=0;
+    c_sous_antes{1,l}= [0 0];
+end
+
+
 % calcule du resultat
 chemins=[];
 
 %similarité accumulé maximun
-
-
 for n=1:nb_match
 %     figure;
 %     imagesc(m_res);
     
-    max_tmp = max(max(m_res));
-    [max_x, max_y]= find(m_res==max_tmp);
-    max_x= max_x(1);
-    max_y= max_y(1);
+    max_tmp = max(max(m_sous_res));
+    [max_x, max_y]= find(m_sous_res==max_tmp);
+    max_x= max_x(end);
+    max_y= max_y(end);
     
     if n == 1
         score= max_tmp;
     end
     % on met la case a 0
-    m_res(max_x, max_y)=0;
+    m_sous_res(max_x, max_y)=0;
+
+    tmp_x= 0;
+    if mod(len_B/2,1)
+        tmp_x= +1;
+    end
     
-    chemin= [max_x max_y];
-    
-    while c_antes{max_x, max_y}(1) >0 && c_antes{max_x, max_y}(2) > 0
-        tmp_x= c_antes{max_x, max_y}(1);
-        tmp_y= c_antes{max_x, max_y}(2);
+    chemin= [max_x+floor((len_B)/2)+1+tmp_x max_y];
+                
+    while c_sous_antes{max_x, max_y}(1)>0 && c_sous_antes{max_x, max_y}(2)>0
+        tmp_x= c_sous_antes{max_x, max_y}(1);
+        tmp_y= c_sous_antes{max_x, max_y}(2);
+       
         
         max_x=tmp_x;
         max_y=tmp_y;
         
-        chemin= [[max_x max_y]; chemin];
+        chemin= [[max_x+floor((len_A+1)/2) max_y]; chemin];
         
         % on met la case a 0
-        m_res(max_x, max_y)= 0;
+        m_sous_res(max_x+1, max_y)= 0;
+        
     end
     
     chemins= [{chemin} chemins];
@@ -106,13 +143,12 @@ end
 
 end
 
-function indice = recheche_cor (s)
+function indice = recheche_cor (s, m_cor)
 %retourne l'indice du caractere dans la matrice de similarite
 %a l'aide de la matrice de correspondance
-    val_tmp=-6;
-    for k=0: 13
-        if s== val_tmp+k
-            indice = k+1;
+    for k=1: size(m_cor,1)
+        if strcmp(m_cor(k,1:3), s);
+            indice = k;
         end
     end
 end

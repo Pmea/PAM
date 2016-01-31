@@ -74,8 +74,8 @@ end
 
 %creation d'un sous espace 
 
-m_sous_res= m_res(floor((len_A+1)/2):len_A+1, 1:floor((len_B+1)/2));
-c_sous_antes= cell(len_A+1 - floor((len_A+1)/2), floor((len_B+1)/2));
+m_sous_res= m_res(floor((len_A+1)/2)+1:len_A+1, 1:floor((len_B+1)/2)+1);
+c_sous_antes= cell(len_A+1 - floor((len_A+1)/2)-1, floor((len_B+1)/2)-1);
 
 for k=1:floor((len_A+1)/2)+1     %copie de la cell
     for l=1:floor((len_B+1)/2)+1
@@ -87,11 +87,11 @@ for k=1:floor((len_A+1)/2)+1     %copie de la cell
 end
 
 
-for k=1:size(m_sous_res,1)-1
+for k=1:size(c_sous_antes,1)
     m_sous_res(k,1)= 0;
     c_sous_antes{k,1}= [0 0];
 end
-for l=1:size(m_sous_res,2)-1
+for l=1:size(c_sous_antes,2)
     m_sous_res(1,l)=0;
     c_sous_antes{1,l}= [0 0];
 end
@@ -117,13 +117,11 @@ for n=1:nb_match
     m_sous_res(max_x, max_y)=0;
 
     tmp_x= 0;
-    tmp_y= 0;
     if mod(len_A/2,1)
-        tmp_x= 0;
-        tmp_y= -1;
+        tmp_x= +1;
     end
     
-    chemin= [max_x+floor((len_A)/2)+tmp_x max_y+1+tmp_y];
+    chemin= [max_x+floor((len_A)/2)+1+tmp_x max_y];
                 
     while c_sous_antes{max_x, max_y}(1)>0 && c_sous_antes{max_x, max_y}(2)>0
         tmp_x= c_sous_antes{max_x, max_y}(1);

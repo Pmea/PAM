@@ -27,6 +27,10 @@ v_val_accord= zeros(size(v_accord,1), 1);
 for k=1:length(v_val_accord) %pour toute la chaine
     s= v_accord(k,1:2);
     
+    if s(2)== 'm'
+        s(2)= ' ';
+    end
+    
     found=false;
     for l=1:length(m_corres)  % on chercher le bon element
         if strcmp(m_corres(l, 1:2), s(1:2))
@@ -43,7 +47,7 @@ for k=1:length(v_val_accord) %pour toute la chaine
     
     if found == false
         disp('Accord non trouvé');
-        disp('Erreur format suitre accord');
+        disp('Erreur format suite accord');
         assert(true);
     end
 end

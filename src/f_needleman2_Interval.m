@@ -135,9 +135,9 @@ function indice = recheche_cor (s)
 %retourne l'indice du caractere dans la matrice de similarite
 %a l'aide de la matrice de correspondance
     val_tmp=-6;
-    for k=1: 12
+    for k=0: 12
         if s== val_tmp+k
-            indice = k;
+            indice = k+1;
         end
     end
 end
