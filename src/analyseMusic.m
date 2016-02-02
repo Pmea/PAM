@@ -71,7 +71,13 @@ if 0
 %             detune = 1;
 
             % Création de la base chromas et observation chromas 
-            file_id = file_id(1:end-4); % Removes '.wav' at the end
+            ind_fin=0;
+            while file_id(end - ind_fin) ~= '.'
+                ind_fin = ind_fin + 1 ;
+            end
+            ind_fin = ind_fin + 1 ;
+
+            file_id = file_id(1:end - ind_fin); % Removes '.wav' at the end
             
             % Map name with excel file
             index=1;
@@ -148,7 +154,7 @@ end
 
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
-if 1
+if 0
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
 	% Parcours de la base de référence musicale
@@ -162,7 +168,7 @@ if 1
     
     c_morceaux= cell(1,1);
     
-    for k = 1:length(albums) % On parcourt les albums
+    for k = 1:1%length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
         ind_deb = 1;
@@ -172,7 +178,7 @@ if 1
         
         morceaux = morceaux(ind_deb:end);
         
-        for k = 1:1%length(morceaux) % On parcourt les morceaux
+        for k = 1:length(morceaux) % On parcourt les morceaux
             % On obtient name_file = name.mp3
             name_file = morceaux(k).name;
             
@@ -188,21 +194,28 @@ if 1
 %             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
 %             detune = 1;
 
-            % Get file's tempo
-            addpath(directory_function);
-            [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
-            rmpath(directory_function);
+           % Get file's tempo
+%             addpath(directory_function);
+%             [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
+%             rmpath(directory_function);
+%             
+%             med = median(tempo_v); % Get BPM
+%             dir1_v = find(y_v ~= 0); % Get onsets
             
-            med = median(tempo_v); % Get BPM
-            dir1_v = find(y_v ~= 0); % Get onsets
+           % Création de la base chromas et calcul des observations chromas           
+           % paramètres pour la détection sur le rythme
+           L_sec					= 0.2; %60/med;	% --- Analysis window duration in seconds
+           STEP_sec				= L_sec/2;	% --- Analysis hop size in seconds
+%           data_v = data_v(dir1_v(1):end); % Le morceau démarre sur le premier onset
             
-            % Création de la base chromas et calcul des observations chromas           
-            % paramètres pour la détection sur le rythme
-            L_sec					= 60/med;	% --- Analysis window duration in seconds
-            STEP_sec				= L_sec/2;	% --- Analysis hop size in seconds
-            data_v = data_v(dir1_v(1):end); % Le morceau démarre sur le premier onset
+            ind_fin=0;
+            while name_file(end - ind_fin) ~= '.'
+                ind_fin = ind_fin + 1 ;
+            end
+            ind_fin = ind_fin + 1 ;
+
+            file_key = name_file(1:end - ind_fin); % Removes '.mp3' at the end
             
-            file_key = name_file(1:end-4); % Removes '.mp3' at the end
             str = sprintf('%s: Analyse des accords\n', file_key);
             fprintf(1, str);   
 
@@ -215,7 +228,7 @@ if 1
             % Détection d'accords par HMM
             addpath(directory_function); % Ajoute le répertoire pour runner la fonction
             obs_m = extractChroma(data_v, sr_hz, L_n, STEP_n, detune);
-           % path_v = HMM(Accords_mat, obs_m);
+            path_v = HMM(Accords_mat, obs_m);
             rmpath(directory_function); % Ajoute le répertoire pour runner la fonction
     
             keys_chords = Accords_mat.keys();
@@ -230,8 +243,12 @@ if 1
             % creation de la structure
             nouv_morceau.name= name_file;
             nouv_morceau.fe= sr_hz;
-            nouv_morceau.accords= list_chords;
-            nous_morceau.temps_accords= list_times;
+            indice_debut=1;
+            while strcmp(list_chords(indice_debut,:), 'N  ')
+                indice_debut= indice_debut +1;
+            end
+            nouv_morceau.accords= list_chords(indice_debut:end,:);
+            nouv_morceau.tempsAccords= list_times(indice_debut:end,:);
             
             % concatenation de la structure
             c_morceaux= [c_morceaux nouv_morceau];
@@ -250,7 +267,7 @@ end
 
 %% recuperation chroma de reference
 
-m_ordre_chords=[          
+m_ordre_chords=[ 
     'C  ';
     'Db ';%
     'D  ';
@@ -276,13 +293,14 @@ m_ordre_chords=[
     'Am ';
     'Bbm';%
     'Bm ';
+    'N  '; % faut il ajouter a la detection
     ];
-
 for k = 1: size(m_ordre_chords,1)
     if isKey(Accords_mat_2, m_ordre_chords(k,:))
-       disp(m_ordre_chords(k,:));
        c_chroma_ref{k}= Accords_mat_2(m_ordre_chords(k,:));
     end
 end
+c_chroma_ref{k}= [0;0;0;0;0;0;0;0;0;0;0;0];
 
-%clearvars -except c_chroma_ref c_morceaux %pour la version final
+
+clearvars -except c_chroma_ref c_morceaux %pour la version final

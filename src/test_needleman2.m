@@ -8,8 +8,8 @@ chaineA=[
         'T  ';
         'T  ';
         'A  ';
-       % 'C  ';
-       % 'U  ';
+        'C  ';
+        'U  ';
         ];
         
 chaineB=[
@@ -19,7 +19,7 @@ chaineB=[
         'T  ';
         'A  ';
         'A  ';
-       % 'A  ';
+        'A  ';
         ];
 
 %definition de l'alphabet

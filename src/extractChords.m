@@ -84,7 +84,7 @@ obs_m = zeros(12, total_nb_trames);
 nb_trames = 1;
 
 % Parameters for dictionnary
-former_chord = 'N  '; % In case we have same chords following
+former_chord = 'A  '; % In case we have same chords following
 begin = 1; % Begin of the chord
 
 % Treatment of data_v with sliding window
@@ -99,7 +99,7 @@ for sliding = 1:STEP_n:ending
     % Comparaison with database's chords
     chords_keys = Accords.keys();
     distance_max = 0;
-    chord = 'N  ';
+    chord = 'A  ';
 
     for k = 1:length(chords_keys)
         y_v = Accords(char(chords_keys(k))); % colmun vector - database's chord chroma

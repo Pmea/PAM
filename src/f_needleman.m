@@ -58,7 +58,6 @@ while  m_antes(k,l) ~= def_ini
     chemin= [[k l]; chemin];    
     
     score= score + m_res(k,l);
-    disp(score);
     switch m_antes(k,l)
         case def_gau
             l= l-1;

@@ -121,20 +121,20 @@ for n=1:nb_match
         tmp_x= +1;
     end
     
-    chemin= [max_x+floor((len_A)/2)+1+tmp_x max_y];
+    chemin= [max_x+floor((len_A)/2)+tmp_x max_y];
                 
     while c_sous_antes{max_x, max_y}(1)>0 && c_sous_antes{max_x, max_y}(2)>0
-        tmp_x= c_sous_antes{max_x, max_y}(1);
-        tmp_y= c_sous_antes{max_x, max_y}(2);
+        tmp_max_x= c_sous_antes{max_x, max_y}(1);
+        tmp_max_y= c_sous_antes{max_x, max_y}(2);
        
         
-        max_x=tmp_x;
-        max_y=tmp_y;
+        max_x=tmp_max_x;
+        max_y=tmp_max_y;
         
-        chemin= [[max_x+floor((len_A+1)/2) max_y]; chemin];
+        chemin= [[max_x+floor((len_A+1)/2)+tmp_x max_y]; chemin];
         
         % on met la case a 0
-        m_sous_res(max_x+1, max_y)= 0;
+        m_sous_res(max_x, max_y)= 0;
         
     end
     

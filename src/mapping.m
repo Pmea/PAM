@@ -109,11 +109,7 @@ for k = 1:length(albums) % On parcourt les albums
             
             % Mapping # - b
             if length(chord) > 1 && chord(2) == '#'
-<<<<<<< HEAD
-                if strcmp(chord(1), 'G')
-=======
                 if chord(1) == 'G'
->>>>>>> f3092472485ad5b14779c9d6262ff7d902075655
                     chord(1) = 'A';
                 else
                     chord(1) = char(chord(1)+1); % lettre supérieure

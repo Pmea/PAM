@@ -10,13 +10,27 @@ chaineA=[
         'G  ';
         'C  ';
         'U  ';
+        'G  ';
+        'C  ';
+        'A  ';
+        'T  ';
+        'G  ';
+        'C  ';
+        'U  ';
         ];
         
 chaineB=[
         'G  ';
         'A  ';
         'T  ';
- %       'T  ';
+        'T  ';
+        'A  ';
+        'C  ';
+        'A  ';
+        'G  ';
+        'A  ';
+        'T  ';
+        'T  ';
         'A  ';
         'C  ';
         'A  ';
@@ -43,7 +57,7 @@ m_sim= [1 -1 -1 -1 -1;
 %          -4 -3 0 8 -3; 
 %          -1 -2 -2 -3 10];
 
-gap= -1;  % ouverture et extension
+gap= -0.5;  % ouverture et extension
 
 [chemin, score]= f_needleman(chaineA, chaineB, m_sim, m_cor, gap);
 
