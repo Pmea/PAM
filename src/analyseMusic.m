@@ -142,6 +142,9 @@ end
 %% Analyser la bibliothèque musicale
 fprintf(1, 'Analyse de la bibliothèque musicale\n\n');
 if 1
+    
+    % Create base
+    chords_base = generateChordBase();
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
 	% Parcours de la base de référence musicale
@@ -155,7 +158,7 @@ if 1
     
     c_morceaux= cell(1,1);
     
-    for k = 1:length(albums) % On parcourt les albums
+    for k = 1:1%length(albums) % On parcourt les albums
         cd(albums(k).name) % Va dans l'album
         morceaux = dir(pwd); % On récupère les morceaux pour chaque album
         ind_deb = 1;
@@ -181,19 +184,19 @@ if 1
 %             data_v = resample(data_v, sr_hz, floor(detune*sr_hz));
 %             detune = 1;
 
-            % Get file's tempo
-            addpath(directory_function);
-            [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
-            rmpath(directory_function);
-            
-            med = median(tempo_v); % Get BPM
-            dir1_v = find(y_v ~= 0); % Get onsets
-            
-            % Création de la base chromas et calcul des observations chromas           
-            % paramètres pour la détection sur le rythme
-            L_sec					= 60/med;	% --- Analysis window duration in seconds
-            STEP_sec				= L_sec/2;	% --- Analysis hop size in seconds
-            data_v = data_v(dir1_v(1):end); % Le morceau démarre sur le premier onset
+%             % Get file's tempo
+%             addpath(directory_function);
+%             [y_v, tempo_v] = f_rhythm (data_v, sr_hz);
+%             rmpath(directory_function);
+%             
+%             med = median(tempo_v); % Get BPM
+%             dir1_v = find(y_v ~= 0); % Get onsets
+%             
+%             % Création de la base chromas et calcul des observations chromas           
+%             % paramètres pour la détection sur le rythme
+%             L_sec					= 60/med;	% --- Analysis window duration in seconds
+%             STEP_sec				= L_sec/2;	% --- Analysis hop size in seconds
+%             data_v = data_v(dir1_v(1):end); % Le morceau démarre sur le premier onset
             
             file_key = name_file(1:end-4); % Removes '.mp3' at the end
             str = sprintf('%s: Analyse des accords\n', file_key);
@@ -217,6 +220,11 @@ if 1
                 list_chords_2 = [list_chords_2 keys_chords(path_v(k))];
             end
             
+            
+            % Détection d'accords
+            addpath(directory_function);
+            [list_chords_3, list_times_3] = extractChords2(data_v, sr_hz, L_n, STEP_n, detune, chords_base);
+            rmpath(directory_function);
             % On le met dans le dictionnaire
             Chords(file_key) = list_chords;
             

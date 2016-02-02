@@ -38,24 +38,33 @@ for j= 1:24
     end 
     if j>12
          for i=1:12
-         mat(j,i)=d(mod(i-1-decalage,12)+1);
+            mat(j,i)=d(mod(i-1-decalage,12)+1);
          end
     end
     
-
     decalage= decalage+1;
 end
 
-% creation des chromas de ref
-c_chroma_ref= cell(1,34);
-v_cor=[1;2;2;3;4;4;5;6;7;7;8;9;9;10;11;11;12;
-           13;14;14;15;16;16;17;18;19;19;20;21;21;22;23;23;24];  
-     
-    
+% création des chromas de ref
+c_chroma_ref= cell(1,24);
 
 for k=1:size(c_chroma_ref,2)
-    c_chroma_ref{k}= mat(v_cor(k),:)';
+    c_chroma_ref{k}= mat(k,:)';
 end
+
+% % creation des chromas de ref
+% c_chroma_ref= cell(1,34);
+% v_cor=[1;2;2;3;4;4;5;6;7;7;8;9;9;10;11;11;12;
+%            13;14;14;15;16;16;17;18;19;19;20;21;21;22;23;23;24];  
+%      
+%     
+% 
+% for k=1:size(c_chroma_ref,2)
+%     v_cor(k)
+%     c_chroma_ref{k}= mat(v_cor(k),:)';
+%     figure()
+%     imagesc(c_chroma_ref{k});
+% end
 
 %% c_chroma_ref matrice de chromas pour les 24 accords
 

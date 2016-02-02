@@ -100,9 +100,20 @@ for sliding = 1:STEP_n:ending
     chords_keys = Accords.keys();
     distance_max = 0;
     chord = 'N';
+% 
+%     chords_mat = zeros(12, length(chords_keys)); % Matrice contenant les chromas des accords
+%     for k = 1:length(chords_keys)
+%         chords_mat(:,k) = Accords(char(chords_keys(k)));
+%     end
+%     
+%     dist_mat = zeros(24, total_nb_trames); % Matrices des distances
+%                                            % pour chaque colonne (trame),
+%                                            % on a la distance avec les 24
+%                                            % accords
+%     num = x_v*chord_mat; % row vector
 
     for k = 1:length(chords_keys)
-        y_v = Accords(char(chords_keys(k))); % colmun vector - database's chord chroma
+        y_v = Accords(char(chords_keys(k))); % column vector - database's chord chroma
 
         % Cosinusoidal distance
         num = x_v*y_v; % numerator of the distance
@@ -115,7 +126,20 @@ for sliding = 1:STEP_n:ending
             distance_max = dist_chords;
         end
     end
-    
+
+    dist_mat = zeros(24, total_nb_trames);
+
+    for k = 1:length(chords_keys)
+        y_v = Accords(char(chords_keys(k))); % column vector - database's chord chroma
+
+        % Cosinusoidal distance
+        num = x_v*y_v; % numerator of the distance
+        denum = sqrt(x_v*x_v')*sqrt(y_v'*y_v)+eps; % denominator of the distance, +eps to avoid denum = 0
+        dist_chords = num/denum; % distance between chords
+        
+        dist_mat(k, nb_trames) = dist_chords; % On remplit la matrice des distances
+    end
+
     % Same chord ?
      while size(chord,2) < 3
         chord= [chord ' '];
@@ -132,6 +156,22 @@ for sliding = 1:STEP_n:ending
     former_chord = chord;
     nb_trames = nb_trames + 1;
 end
+
+% %% Manage distances
+% % Low-pass filter on distances
+% for k = 1:size(dist_mat, 1)
+%     w = hanning(round(2/5*sr_hz));
+%     dist_mat(k,:) = filter(w, 1, dist_mat(k,:));
+% end
+% 
+% % Récupération du max
+% list_chords = zeros(1, size(dist_mat, 2));
+% for k = 1:size(dist_mat, 2)
+%     [~, ind_max] = max(dist_mat(:, k));
+%     list_chords(k) = ind_max;
+% end
+
+
 
 %% Display chroma observation matrix - Question 2.3
 if display
