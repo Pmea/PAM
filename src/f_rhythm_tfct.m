@@ -1,42 +1,45 @@
-function [y_v,tempo_v] = f_rhythm (x_v, Fs)
+function [y_v,tempo_v] = f_rhythm_tfct (x_v, Fs)
 
-% Facteur de décimation
-factor = round(Fs/100);
-Fs_flux = floor(Fs/factor);
+step_s = 0.010;
+windowtime_s = 0.046;
+L_n = floor(Fs * 2 * windowtime_s);
+Nfft = 2^nextpow2(L_n);
+R = floor(Fs * step_s);
 
-halfhann = hann(round(Fs_flux*2/5));
-halfhann = halfhann(round(Fs_flux/5):end);
+Xtilde_m = f_tfct(x_v, Nfft, L_n, R);
 
-% On récupère les onsets, décimation pour calculer plus vite
-% Val absolue du signal, puis convolution pour obtenir l'enveloppe
-% Dérivation puis redressement mono-alternance pour obtenir uniquement
-% les attaques (montées) et pas les descentes.
+% On passe en logartihmique
+LX_m = 20*log(abs(Xtilde_m));
+LX_m_max = max(LX_m(:));
+    
+LX_m_moy = 50;
 
-onsets_v = decimate(x_v,factor);
-onsets_v = abs(onsets_v);
-onsets_v = conv(onsets_v,halfhann);
-onsets_v = diff(onsets_v);
-onsets_v = (onsets_v + abs(onsets_v))/2;
-onsets_v = onsets_v.';
+% On ramène les éléments trop faibles à M-T
+LX_m(LX_m < (LX_m_max - LX_m_moy)) = LX_m_max - LX_m_moy;
 
-N_SF = length(onsets_v);
+% Dérivation et récupération du maximum pour chaque trame
+% Voilà notre vecteurs d'onsets indiquant les attaques
+Spectral_flux_v = sum(max(diff(LX_m,[],2), 0), 1);
 
-% Taille de la fenêtre glissante
-N_win_s = 8;
-N_win = N_win_s * Fs_flux;
+% Fréquences d'échantillonage de la trame des onsets
+Fs_flux = floor(Fs/R);
 
-if length(x_v)/Fs < N_win_s
-    N_win = floor(length(x_v)/Fs - 1) * Fs_flux;
-    N_win_s = floor(length(x_v)/Fs - 1);
-end
+N = length(Spectral_flux_v);
 
 % Pas d'avancement
 R_rhythm = floor(.5 * Fs_flux);
 
-% Nombre de fenêtres dans la trame complète
-Nt = fix( (N_SF - N_win) / R_rhythm);
+% Taille de la fenêtre glissante
+N_win = floor(8 * Fs_flux);
 
-Nfft2 = floor( N_win_s * 2^nextpow2(N_win) );
+if N < N_win
+    N_win = N - R_rhythm;
+end
+
+% Nombre de fenêtres dans la trame complète
+Nt = fix((N - N_win)/R_rhythm);
+
+Nfft2 = 8*2^nextpow2(N_win);
 
 % Rythmogramme en frequence
 rhythmogram2_m = zeros(Nfft2/2+1,Nt);
@@ -45,41 +48,32 @@ for k= 1 : Nt
     deb = 1 + (k - 1) * R_rhythm; % début de trame
     fin = deb + N_win; % fin de trame
     
-    signal_v = onsets_v(deb:fin);
+    signal_v = Spectral_flux_v(deb:fin);
     signal_v = signal_v-mean(signal_v);
     
     tmp_v = abs(fft(signal_v, Nfft2));
     rhythmogram2_m(:,k) = tmp_v(1:Nfft2/2+1);
 end
 
-% % Rythmogramme fréquentiel, analogue à un spectrogramme (~ sur 0-5 Hz)
-% imagesc((1:Nt), (0:Nfft2) / Nfft2 * Fs_flux * 60, rhythmogram2_m);
-% axis xy, colorbar('vert')
-% ax = axis;
-% axis([ax(1) ax(2) 0 300])
-% 
-% pause;
-
 % Détermination du vecteur qui indique l'évolution du tempo dans le temps
-min_tempo = floor(60 / Nfft2 * Fs_flux * 60);
+min_tempo = floor(50 / Nfft2 * Fs_flux * 60);
 max_tempo = floor(300 / Nfft2 * Fs_flux * 60);
 [~,tempo_v] = max(rhythmogram2_m(min_tempo:max_tempo,:));
 tempo_v =  tempo_v + min_tempo;
 tempo_v = tempo_v / Nfft2 * Fs_flux * 60;
 tempo_v(tempo_v > 300) = [];
 tempo_v(tempo_v > 180) = tempo_v(tempo_v > 180) / 2;
-tempo_v(tempo_v < 70) = tempo_v(tempo_v < 70) * 2;
 
 Nt = length(tempo_v);
 
-R_flux = floor(N_SF/Nt);
+R_flux = floor(N/Nt);
 N_win = R_flux;
 
 R = floor(length(x_v)/Nt);
 L_n = R;
 
-% Tableau référençant le retard ou avance en sample
-% Calcul à effectuer pour chaque frame
+% Tableau référençant le retard ou avance 
+% en sample à effectuer pour chaque frame
 pos_n_v = zeros(Nt,1);
 pos_s_v = zeros(Nt,1);
 
@@ -97,31 +91,25 @@ for k = 1 : Nt
     
     deb = 1 + (k - 1) * R_flux; % début de trame
     fin = deb + N_win - 1; % fin de trame
-    % On évite de sortir du tableau par erreur
-    deb = max([1 deb]);
-    fin = min([length(onsets_v) fin]);
     
     deb_s = 1 + (k - 1) * R;
     fin_s = deb_s + L_n;
-    % On évite de sortir du tableau par erreur
-    deb_s = max([1 deb_s]);
-    fin_s = min([length(y_v) fin_s]);
     
-    % On effectue la convolution
-    conv_flux = conv(onsets_v(deb:fin), dir_v);
+    % On fait la convolution
+    conv_flux = conv(Spectral_flux_v(deb:fin), dir_v);
     conv_flux(N_win+1:end) = [];
     
     [~, temp_position] = max(conv_flux);
     
-    % On calcule l'intervalle entre le dirac précédant et le temps fort
+    % On calcule l'intervalle entre le dirac précédant le temps fort
     pos_n_v(k) = mod(temp_position,period_n);
     
     % On convertit ça en échantillon pour traiter l'audio
     pos_s_v(k) = floor(pos_n_v(k)/Fs_flux*Fs);
     
-    while deb_s + pos_s_v(k) < 1
+    while deb_s+pos_s_v(k) < 1
         deb_s = deb_s + period_s;
-        dir_s_v(end - period_s :end) = [];
+        dir_s_v(end-period_s:end) = [];
     end
     
     % Si la dernière fenêtre dépasse la taille du tableau
@@ -137,18 +125,13 @@ for k = 1 : Nt
     if k > 1
         deb_temp = floor(deb_s + pos_s_v(k) - period_s/3);
         fin_temp = floor(deb_s + pos_s_v(k) + period_s/3);
-        
-        deb_temp = max([deb_temp 1]);
-        fin_temp = min([fin_temp length(y_v)]);
-        
-        y_temp = y_v(deb_temp: fin_temp);
-        
-        % On cherche deux diracs consécutifs sur un court intervalle
+        if fin_temp > length(y_v)
+            fin_temp = length(y_v);
+        end
+        y_temp = y_v(deb_temp: fin_temp) ;
         is_dir = find(y_temp ~= 0);
         if length(is_dir) >= 2
             y_temp(is_dir) = 0;
-            % Si c'est le cas, on les remplace par un seul centré
-            % sur la valeur moyenne des deux
             y_temp(floor(mean(is_dir))) = 1;
             y_v(deb_temp:fin_temp) = y_temp;
         end
