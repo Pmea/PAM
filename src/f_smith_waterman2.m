@@ -1,11 +1,11 @@
 function [chemins, score]= f_smith_waterman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
-% Calcule le plus court chemin entre les deux chaines
+% retourne les meilleurs chemins dans le matrice 
 % chaineA: premiere chaine comparé (en ordonner dans le tableau)
 % chaineB: seconde chaine comparé (en abscisse dans le tableau)
 % m_sim: correspondant a la matrice de pénalité entre les accords (matrice de cout)
 % m_cor: matrice de correspondance entre l'accord (en lettre) et l'indice dans la matrice de similarité 
 % open_gap et ext_gap: respectivement le cout d'ouverture et d'extension d'un gap
-
+% nb_match: le nombre de chemin que l'on veut recuperer
 
 %initialisation
 len_A= length(chaineA);

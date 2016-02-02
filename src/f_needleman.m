@@ -1,4 +1,5 @@
 function [chemin, score]= f_needlenam(chaineA, chaineB, m_sim, m_cor, gap)
+% Calcule le chemin optimal avec l'algorithme de needleman
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -68,7 +69,7 @@ while  m_antes(k,l) ~= def_ini
             k= k-1;
         otherwise
             disp('Erreur valeur de l''antecedant');
-            assert(true);
+            assert(false);
     end
 end
 chemin= [[1 1]; chemin];

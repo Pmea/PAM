@@ -1,6 +1,9 @@
 function [m_penalty, m_corres]= f_creer_penalty_et_corres_dist(c_chroma_ref)
-%les chromas doivent etre dans cet ordre
+%calcule ma matrice de penalite (similarite entre accords) a partir de les
+%chromas de reference
 
+
+%les chromas doivent etre ordonné
 % matrice pouvant etre utiliser pour faire
 % la correspondence entre 34 et 24 pour les accords
 m_corres=[ 
@@ -49,14 +52,13 @@ for k=1:size(m_corres,1)
         m_penalty(l,k)= val_tmp;
     end
 end
-% 
-% moyenne=mean(m_penalty(:));
-% m_penalty= m_penalty - moyenne;
+
 m_penalty= -m_penalty;
 
 end
 
 function [score] = distance(v_chroma1, v_chroma2)
+% calcul de la distance entre chaque chroma
     v_d= abs(v_chroma1 - v_chroma2);
     
     score= sum(v_d);

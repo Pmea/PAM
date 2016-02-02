@@ -1,4 +1,12 @@
 function [chemins, score]= f_smith_waterman2_playlist(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
+% retourne les meilleurs chemins dans un sous espace de la matrice
+% utilisé par la creatiuon de la playlist
+% chaineA: premiere chaine comparé (en ordonner dans le tableau)
+% chaineB: seconde chaine comparé (en abscisse dans le tableau)
+% m_sim: correspondant a la matrice de pénalité entre les accords (matrice de cout)
+% m_cor: matrice de correspondance entre l'accord (en lettre) et l'indice dans la matrice de similarité 
+% open_gap et ext_gap: respectivement le cout d'ouverture et d'extension d'un gap
+% nb_match: le nombre de chemin que l'on veut recuperer
 
  moyenne=mean(m_sim(:));
  m_sim= m_sim - moyenne;
@@ -30,8 +38,6 @@ end
 
 for k=2:len_A+1
     for l=2:len_B+1
-%         disp([k l]);
-%         disp([chaineA(k-1) chaineB(l-1)]);
         ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
         ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         
@@ -102,8 +108,6 @@ chemins=[];
 
 %similarité accumulé maximun
 for n=1:nb_match
-%     figure;
-%     imagesc(m_res);
     
     max_tmp = max(max(m_sous_res));
     [max_x, max_y]= find(m_sous_res==max_tmp);

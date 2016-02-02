@@ -1,7 +1,14 @@
-function [chemins, score]= f_smith_waterman_Interval(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
+function [chemins, score]= f_smith_waterman_Interval(chaineA, chaineB, m_sim, open_gap, ext_gap, nb_match)
+% retourne les meilleurs chemins dans le matrice, avec deux chaines
+% d'intervals
+% chaineA: premiere chaine comparé (en ordonner dans le tableau)
+% chaineB: seconde chaine comparé (en abscisse dans le tableau)
+% m_sim: correspondant a la matrice de pénalité entre les accords (matrice de cout)
+% open_gap et ext_gap: respectivement le cout d'ouverture et d'extension d'un gap
+% nb_match: le nombre de chemin que l'on veut recuperer
+
 
 %initialisation
-
 len_A= length(chaineA);
 len_B= length(chaineB);
 
@@ -24,7 +31,6 @@ end
 
 
 % calcule de la matrice
-
 for k=2:len_A+1
     for l=2:len_B+1
         ind_A=recheche_cor(chaineA(k-1));
@@ -69,12 +75,8 @@ end
 chemins=[];
 
 %similarité accumulé maximun
-
-
 for n=1:nb_match
-%     figure;
-%     imagesc(m_res);
-    
+
     max_tmp = max(max(m_res));
     [max_x, max_y]= find(m_res==max_tmp);
     max_x= max_x(1);

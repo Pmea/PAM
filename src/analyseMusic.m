@@ -293,8 +293,10 @@ m_ordre_chords=[
     'Am ';
     'Bbm';%
     'Bm ';
-    'N  '; % faut il ajouter a la detection
+    'N  '; % l'accords nul, si il y a un moment de silence dans le morceau
     ];
+
+% creation des chromas de references pour la second partie
 for k = 1: size(m_ordre_chords,1)
     if isKey(Accords_mat_2, m_ordre_chords(k,:))
        c_chroma_ref{k}= Accords_mat_2(m_ordre_chords(k,:));
@@ -303,4 +305,4 @@ end
 c_chroma_ref{k}= [0;0;0;0;0;0;0;0;0;0;0;0];
 
 
-clearvars -except c_chroma_ref c_morceaux %pour la version final
+clearvars -except c_chroma_ref c_morceaux 

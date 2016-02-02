@@ -1,4 +1,6 @@
 function [chemin, score]= f_needleman_interval(chaineA, chaineB, m_sim, gap)
+% calcul la matrice de needleman mais avec des suites intervals a la place 
+% des suites d'accords  
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -6,14 +8,13 @@ function [chemin, score]= f_needleman_interval(chaineA, chaineB, m_sim, gap)
 % poid du gap
 
 %initialisation
-
 len_A= size(chaineA,1);   
 len_B= size(chaineB,1);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
 m_antes= zeros(len_A+1, len_B+1);   % au debut du mot
 
-% pour la recheche d'antessedant on prend la convention gauche/diago/haut
+% pour la recheche d'antecedant on prend la convention gauche/diago/haut
 def_gau=1;  % define variable pour antessedant dans le tableau          
 def_dia=2;
 def_hau=3;
