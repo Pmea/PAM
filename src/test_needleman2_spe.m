@@ -1,12 +1,15 @@
-% creation fausse matrice de chroma 
+% test de needleman avec gap affine avec utilisation de matrice de penalty
+% calculé a partir de chromas de reference
+
 close all;
 clear all;
 
 
+% creation des chroma de ref a partir d'accords de piano
 inputAudioFile = './DOMAJEUR.wav';
 inputAudioFile2 = './DOMINEUR.wav';
 
-[data_v, sr_hz] = audioread(inputAudioFile);
+[data_v, ~] = audioread(inputAudioFile);
 [data_v2, sr_hz] = audioread(inputAudioFile2);
 
 L_sec					= 0.2;	% --- window duration in seconds
@@ -27,7 +30,7 @@ obs_m2 = extractChroma(data_v2, sr_hz, L_n, STEP_n, detune);
 c=obs_m(:,6); %chroma domajeur   
 d=obs_m2(:,3);%chroma domineur
 
-%decaler
+% decaler les chromas pour avoir les 24 accords
 mat = zeros(24,11);
 decalage =0;
 for j= 1:24
@@ -57,6 +60,7 @@ for k=1:size(c_chroma_ref,2)
     c_chroma_ref{k}= mat(v_cor(k),:)';
 end
 
+% creation de liste d'accord factisse 
 chaineA=['C  ';
          'C  ';
          'Db ';
@@ -104,7 +108,7 @@ chaineB= ['C  ';
           'Db '];
                    
                    
-ext_gap= -0.5;        % a determiner precisement
+ext_gap= -0.5;        
 open_gap= -1;
 [m_sim, m_cor]= f_creer_penalty_et_corres_dist(c_chroma_ref);
 

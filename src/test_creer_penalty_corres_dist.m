@@ -1,9 +1,10 @@
 % script pour tester f_create_penalty_corres_dist
-% avec la distance de chaque chroma
+% avec matrice de penalité 
 close all;
 clear all;
 
 
+% creation des chromas de referance par analyse d'accords de piano
 inputAudioFile = './DOMAJEUR.wav';
 inputAudioFile2 = './DOMINEUR.wav';
 

@@ -1,4 +1,4 @@
-% script de test de l'algo de smith_waterman
+% script de test de l'algo de smith_waterman avec gap affine
 close all;
 clear all;
 
@@ -8,7 +8,7 @@ chaineA=['A  ';
         'C  ';
         'A  ';
         'C  ';
-    %    'T  ';
+        'T  ';
         'A  '];
         
 chaineB=['A  ';
@@ -35,7 +35,7 @@ m_sim=  [2 -1 -1 -1;
     
     
 open_gap= -1;  % ouverture et extension
-ext_gap= 0; 
+ext_gap= -0.5; 
 
 nb_match= 1;
 

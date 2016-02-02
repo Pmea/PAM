@@ -1,9 +1,8 @@
+% test Q_transforme classique avec une gamme de piano
+
 close all;
 clear all;
 [sig, Fe]= audioread('audio_gammepno11025.wav');
-%  Fe= 44100;
-%  freq=440;
-%  sig= (sin((1:Fe)/Fe*freq*2*pi) + sin((1:Fe)/Fe*freq*1.26*2*pi) + sin((1:Fe)/Fe*freq*1.5*2*pi) )' ;
 
 plot(sig);
 freq_la_ref= 440;

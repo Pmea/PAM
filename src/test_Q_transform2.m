@@ -1,10 +1,11 @@
+% Test de la efficiant Q-transform
+% donnée de test un gamme chromatique de do joué au piano
+
 close all;
 clear all;
 [sig_tmp, Fe]= audioread('audio_gammepno11025.wav');
-sig= sig_tmp;%(1:4*Fe);
- %Fe= 44100;
- %freq=440;
- %sig= (sin((1:Fe*3)/Fe*freq*2*pi) + sin((1:Fe*3)/Fe*freq*1.26*2*pi) + sin((1:Fe*3)/Fe*freq*1.5*2*pi) )' ;
+sig= sig_tmp;
+
 
 plot(sig);
 freq_la_ref= 440;
