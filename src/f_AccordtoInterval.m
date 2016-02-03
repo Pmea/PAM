@@ -1,6 +1,8 @@
 function [v_inter] =f_AccordtoInterval (v_accord)
+% transforme un suite d'accord en une suite d'interval (l'interval entre accord) 
+% On ne fait pas la differance entre le majeur et le mineur.
 
-% par convention on va dire qu'il y a toujours deux caracteres
+%matrice de correspence entre accords et distance en demi ton
 m_corres=[
     'C  1';
     'C# 2';% meme note
@@ -21,11 +23,15 @@ m_corres=[
     'B 12';
 ];
 
-v_inter= zeros(size(v_accord,1)-1,1);
-v_val_accord= zeros(size(v_accord,1), 1);
+v_inter= zeros(size(v_accord,1)-1,1);     %matrice des intervals
+v_val_accord= zeros(size(v_accord,1), 1); %matrice des valeurs pour chaque accord
 
 for k=1:length(v_val_accord) %pour toute la chaine
     s= v_accord(k,1:2);
+    
+    if s(2)== 'm'           % si mineur, on ignore le caractere
+        s(2)= ' ';
+    end
     
     found=false;
     for l=1:length(m_corres)  % on chercher le bon element
@@ -43,8 +49,8 @@ for k=1:length(v_val_accord) %pour toute la chaine
     
     if found == false
         disp('Accord non trouvé');
-        disp('Erreur format suitre accord');
-        assert(true);
+        disp('Erreur format suite accord');
+        assert(false);
     end
 end
 

@@ -1,18 +1,23 @@
 function [m_spect]= f_Q_transform(v_sig, Fe, Q,note_min, note_max, freq_la_ref)
+% Applique une transformé efficace à Q constant et retoune un chromagramme du signal
+% v_sig: le signal a etudier
+% Fe: frequence d'echantillonnage
+% Q: facteur de qualité
+% note_min: la note la plus basse de l'analyse (en note midi)
+% note_max: la note la plus haut de l'analyse (en note midi)
+% freq_la_ref: la frequence de la de reference, si il y a du descordage
 
-% Variable
-%Nfft= 2^17;
 
+% Variables statique
 v_len_sig= length(v_sig);
-
 Cw=1.82; % le Cw de la fenetre de Hann
-% Calcule des frequences par rapport au fonction midi
 
+% Calcule des frequences par rapport au fonction midi
 nb_note= note_max - note_min +1;
 
-v_mk= (note_min : note_max);  %les notes midi 
-v_f= freq_la_ref * 2.^((v_mk- 69)/12); % les frequences des differentes bandes
-v_f_red= v_f/Fe;  
+v_mk= (note_min : note_max);  %les notes midi (par demi tons)
+v_f= freq_la_ref * 2.^((v_mk- 69)/12); % les frequences des differents demi tons
+v_f_red= v_f/Fe;  %frequence reduite
 
 % Creation des longeurs des fenetres
 v_len_fen= floor((Q * Cw) ./ (v_f/Fe));  % la longeur de la fenetre pour chaque bande
@@ -35,10 +40,8 @@ for k= 1: nb_note
     m_fen(k, deb : fin)= v_fen_tmp(1:fin-deb+1);
 end
 
-% Application de la CQT
-
+% Calcule de la transformé du spectre
 nb_chroma= 12;
-
 m_e= zeros(nb_note, max_len_fen);
 m_e_freq=  zeros(nb_chroma, Nfft);
 
@@ -53,12 +56,8 @@ for l=1:nb_note
 end
 
 % creation de la tfct
-
 hop = floor(min_len_fen / 3);  
 frames= round((v_len_sig - max_len_fen - ceil(max_len_fen/2))/hop-1);  %nb de frame pour la tfct
-disp(frames);         % affichage
-% disp('appuyez pour lancer');
-% pause();
 
 v_sig= v_sig';  % transposition du vecteur colone en vercteur ligne
 
@@ -69,6 +68,8 @@ for k=1: frames
    fin= k*hop + max_len_fen - hop + 1;
    m_tfct_sig(k,:) = fft(v_sig(deb:fin), Nfft);
 end
+
+% Application de la CQT
 
 % application des filtres
 m_spect= zeros(frames, nb_chroma);

@@ -1,4 +1,4 @@
-function [list_chords, list_times] = extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords, Proba)
+function [list_chords, list_chords_2, list_times] = extractChords(data_v, sr_hz, L_n, STEP_n, detune, Accords, Proba)
 % 1) Creates a base of vectors chromas for the file
 % 2) At each time of the audio input signal, extracts an observation vector of type Chroma
 % and compares to the chords in the base
@@ -15,7 +15,6 @@ freq_v = (((1:Nfft/2+1)-1)/Nfft*sr_hz); % positive semi-axe of frequencies,
 display = 0; % If display = 1, display semitones filters and chroma filters
 
 list_chords = []; % Liste des accords
-
 list_times = []; % Liste des temps de début et de fin associés aux accords
 
 %% 1st part: Filters matrix creation 
@@ -81,10 +80,12 @@ ending = length(data_v)-L_n; % Loop ends when sliding > length(data_v)-L_n
 total_nb_trames = floor(ending/STEP_n);
 
 obs_m = zeros(12, total_nb_trames);
+dist_mat = zeros(24, total_nb_trames); % Matrice contenant les distances pour tous les accords
+                                       % pour chaque trame
 nb_trames = 1;
 
 % Parameters for dictionnary
-former_chord = 'N'; % In case we have same chords following
+former_chord = 'A  '; % In case we have same chords following
 begin = 1; % Begin of the chord
 
 % Treatment of data_v with sliding window
@@ -99,18 +100,7 @@ for sliding = 1:STEP_n:ending
     % Comparaison with database's chords
     chords_keys = Accords.keys();
     distance_max = 0;
-    chord = 'N';
-% 
-%     chords_mat = zeros(12, length(chords_keys)); % Matrice contenant les chromas des accords
-%     for k = 1:length(chords_keys)
-%         chords_mat(:,k) = Accords(char(chords_keys(k)));
-%     end
-%     
-%     dist_mat = zeros(24, total_nb_trames); % Matrices des distances
-%                                            % pour chaque colonne (trame),
-%                                            % on a la distance avec les 24
-%                                            % accords
-%     num = x_v*chord_mat; % row vector
+    chord = 'A  '; % Accord de base - Initialisation qui sera modifiée
 
     for k = 1:length(chords_keys)
         y_v = Accords(char(chords_keys(k))); % column vector - database's chord chroma
@@ -119,25 +109,13 @@ for sliding = 1:STEP_n:ending
         num = x_v*y_v; % numerator of the distance
         denum = sqrt(x_v*x_v')*sqrt(y_v'*y_v)+eps; % denominator of the distance, +eps to avoid denum = 0
         dist_chords = num/denum; % distance between chords
-
-        % Compare with other chords
+        dist_mat(k, nb_trames) = dist_chords; % On remplit la matrice des distances
+ 
+        % Compare directly with other chords
         if dist_chords > distance_max
             chord = char(chords_keys(k));
             distance_max = dist_chords;
         end
-    end
-
-    dist_mat = zeros(24, total_nb_trames);
-
-    for k = 1:length(chords_keys)
-        y_v = Accords(char(chords_keys(k))); % column vector - database's chord chroma
-
-        % Cosinusoidal distance
-        num = x_v*y_v; % numerator of the distance
-        denum = sqrt(x_v*x_v')*sqrt(y_v'*y_v)+eps; % denominator of the distance, +eps to avoid denum = 0
-        dist_chords = num/denum; % distance between chords
-        
-        dist_mat(k, nb_trames) = dist_chords; % On remplit la matrice des distances
     end
 
     % Same chord ?
@@ -145,8 +123,8 @@ for sliding = 1:STEP_n:ending
         chord= [chord ' '];
      end
     
-    if ~strcmp(chord, former_chord) % Si on a changé d'accord
-        if abs(begin/sr_hz-sliding/sr_hz)>0.2
+    if ~strcmp(chord, former_chord) % Si on a changé d'accord, on rentre l'accord précédent
+        if  abs(begin/sr_hz-sliding/sr_hz)>0.2; % Pour éviter que ça fluctue trop    
             list_chords = [list_chords; former_chord];
             list_times = [list_times; begin/sr_hz sliding/sr_hz];
             begin = sliding;
@@ -157,20 +135,20 @@ for sliding = 1:STEP_n:ending
     nb_trames = nb_trames + 1;
 end
 
-% %% Manage distances
-% % Low-pass filter on distances
-% for k = 1:size(dist_mat, 1)
-%     w = hanning(round(2/5*sr_hz));
-%     dist_mat(k,:) = filter(w, 1, dist_mat(k,:));
-% end
-% 
-% % Récupération du max
-% list_chords = zeros(1, size(dist_mat, 2));
-% for k = 1:size(dist_mat, 2)
-%     [~, ind_max] = max(dist_mat(:, k));
-%     list_chords(k) = ind_max;
-% end
 
+%% Manage distances - Le filtrage donne des résultats bizarres
+% Low-pass filter on distances over time/trames
+for k = 1:size(dist_mat, 1)
+    w = hanning(round(2/5*sr_hz));
+    dist_mat(k,:) = filter(w, 1, dist_mat(k,:)); % Filtrage sur le temps
+end
+
+% Récupération du max - autre manière de récupérer la liste d'accords
+list_chords_2 = zeros(1, size(dist_mat, 2));
+for k = 1:size(dist_mat, 2) % sur les trames
+    [~, ind_max] = max(dist_mat(:, k)); % On récupère l'indice du max
+    list_chords_2(k) = ind_max; % C'est le numéro de l'accord
+end
 
 
 %% Display chroma observation matrix - Question 2.3

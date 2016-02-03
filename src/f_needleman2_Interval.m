@@ -1,4 +1,6 @@
 function [chemin, score]= f_needleman2_Interval(chaineA, chaineB, m_sim, open_gap, ext_gap)
+% Calcule le chemin optimal avec l'algorithme de needleman sur les intervalles 
+% avec des gaps affines
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -96,7 +98,7 @@ switch ind_a
        m_antes=m_antes_Lx;
     otherwise
        disp('Erreur valeur de l''antessedant');
-       assert(true);
+       assert(false);
 end
 
 chemin= [];
@@ -122,7 +124,7 @@ while  m_antes(k,l) ~= def_init
             score= score + m_res(k,l);
         otherwise
             disp('Erreur valeur de l''antessedant');
-            assert(true);
+            assert(false);
     end
 end
 chemin= [[1 1]; chemin];
@@ -135,9 +137,9 @@ function indice = recheche_cor (s)
 %retourne l'indice du caractere dans la matrice de similarite
 %a l'aide de la matrice de correspondance
     val_tmp=-6;
-    for k=1: 12
+    for k=0: 12
         if s== val_tmp+k
-            indice = k;
+            indice = k+1;
         end
     end
 end

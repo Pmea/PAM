@@ -1,7 +1,10 @@
-% creation fausse matrice de chroma 
+% test de similarité avec matrice de penalité calculé a partir d'accord de
+% piano et des morceaux factisses
 close all;
 clear all;
 
+
+% creation de chroma pour la matrice de pénalité
 
 inputAudioFile = './DOMAJEUR.wav';
 inputAudioFile2 = './DOMINEUR.wav';
@@ -69,8 +72,6 @@ end
 %% c_chroma_ref matrice de chromas pour les 24 accords
 
 
-
-
 % creation de la fausse structure
 % avec 3 morceaux 
 nb_morceaux=3;
@@ -108,18 +109,7 @@ c_morceaux{2}.accords=['C  ';
                        'C  ';
                        'Db ']; 
                    
-% c_morceaux{2}.accords=['Db ';
-%                        'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'Db ';
-%                        'D  ';
-%                        'Db ';
-%                        'Db ';
-%                        'D  ']; 
+ 
 c_morceaux{2}.needlemanIntervals= zeros(1,nb_morceaux) -Inf;                   
 c_morceaux{2}.needlemanAccords= zeros(1,nb_morceaux) -Inf;                   
 
@@ -146,4 +136,3 @@ c_morceaux{3}.needlemanAccords= zeros(1,nb_morceaux) -Inf;
 
 c_morceaux= f_similarity_base(c_morceaux, c_chroma_ref);
 
-% application de la fonction

@@ -1,4 +1,11 @@
 function [chemins, score]= f_smith_waterman(chaineA, chaineB, m_sim, m_cor, gap, nb_match)
+% Calcule le plus court chemin entre les deux chaines
+% chaineA: premiere chaine comparé (en ordonner dans le tableau)
+% chaineB: seconde chaine comparé (en abscisse dans le tableau)
+% m_sim: correspondant a la matrice de pénalité entre les accords (matrice de cout)
+% m_cor: matrice de correspondance entre l'accord (en lettre) et l'indice dans la matrice de similarité 
+% gap: le cout d'insertion d'un gap
+
 
 %initialisation
 
@@ -6,7 +13,7 @@ len_A= length(chaineA);
 len_B= length(chaineB);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
-c_antes= cell(len_A+1, len_B+1);   % au debut du mot
+c_antes= cell(len_A+1, len_B+1);    % au debut du mot
 
 c_antes{1,1}=[0 0];
 
@@ -68,7 +75,6 @@ end
 chemins={};
 
 %similarité accumulé maximun
-
 for n=1:nb_match
     max_tmp = max(max(m_res));
     [max_x, max_y]= find(m_res==max_tmp);

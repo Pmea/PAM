@@ -16,14 +16,18 @@ T = size(probObs_m, 2);
 
 %% --- Init
 probCumul_m(:,1) = probInit_v .* probObs_m(:,1);
-%probCumul_m(:,1) =  log(probInit_v+eps) + log(probObs_m(:,1)+eps);
+%probCumul_m(:,1) =  log(probInit_v+eps) + log(probObs_m(:,1)+eps); % On peut utiliser les log probabilités
+                                                                    % aussi (empêche à probCumul de descendre 
+                                                                    % trop vite)
 
 
 %% --- Forward
 for t=2:T
     for s=1:S
         % --- tmp_v (S,1)
-         [max_value, max_pos]= max(10 .* probCumul_m(:,t-1) .* probTrans_m(:,s));
+         [max_value, max_pos]= max(10 .* probCumul_m(:,t-1) .* probTrans_m(:,s)); % On multiplie par 10 pour éviter 
+                                                                                  % les trop petites valeurs pour Matlab
+                                                                                  % Ne change pas le max
           probCumul_m(s,t)    = max_value * (probObs_m(s,t)+eps);
 %       [max_value, max_pos] = max( log(probCumul_m(:,t-1)+eps) + log(probTrans_m(:,s)+eps) );
 %       probCumul_m(s,t)     = max_value + log(probObs_m(s,t)+eps);
@@ -40,7 +44,5 @@ for t = T-1:-1:1
     path_v(t)   = forwardPath_m(max_pos, t+1);
     max_pos     = path_v(t);
 end
-
-%keyboard
 
 end

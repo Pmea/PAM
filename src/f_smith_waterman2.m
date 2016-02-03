@@ -1,12 +1,18 @@
 function [chemins, score]= f_smith_waterman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap, nb_match)
+% retourne les meilleurs chemins dans le matrice 
+% chaineA: premiere chaine comparé (en ordonner dans le tableau)
+% chaineB: seconde chaine comparé (en abscisse dans le tableau)
+% m_sim: correspondant a la matrice de pénalité entre les accords (matrice de cout)
+% m_cor: matrice de correspondance entre l'accord (en lettre) et l'indice dans la matrice de similarité 
+% open_gap et ext_gap: respectivement le cout d'ouverture et d'extension d'un gap
+% nb_match: le nombre de chemin que l'on veut recuperer
 
 %initialisation
-
 len_A= length(chaineA);
 len_B= length(chaineB);
 
 m_res= zeros(len_A+1, len_B+1);     % avec length+1 car il y a la case vite
-c_antes= cell(len_A+1, len_B+1);   % au debut du mot
+c_antes= cell(len_A+1, len_B+1);    % au debut du mot
 
 c_antes{1,1}=[0 0];
 
@@ -69,11 +75,7 @@ end
 chemins=[];
 
 %similarité accumulé maximun
-
-
 for n=1:nb_match
-%     figure;
-%     imagesc(m_res);
     
     max_tmp = max(max(m_res));
     [max_x, max_y]= find(m_res==max_tmp);
@@ -83,7 +85,8 @@ for n=1:nb_match
     if n == 1
         score= max_tmp;
     end
-    % on met la case a 0
+    % on met la case a 0, pour ne pas trouver des sous chemin du chemin
+    % le plus long 
     m_res(max_x, max_y)=0;
     
     chemin= [max_x max_y];

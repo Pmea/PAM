@@ -1,4 +1,4 @@
-% script de test de l'algo de smith_waterman
+% script de test de l'algo de smith_waterman pour la playlist
 close all;
 clear all;
 
@@ -11,6 +11,7 @@ chaineA=['U  ';
         'U  ';
         'U  ';
         'U  ';
+         'U  ';
         'U  ';
         'U  ';
         'U  ';
@@ -24,7 +25,6 @@ chaineA=['U  ';
 chaineB=['A  ';
          'G  ';
          'T  ';
-         'C  ';
          'C  ';
          'C  ';
          'C  ';
@@ -53,7 +53,7 @@ m_sim= [ 10 -1 -1 -1 -1;
     
     
 open_gap= -1;  % ouverture et extension
-ext_gap= -1; 
+ext_gap= -0,5; 
 
 nb_match= 1;
 

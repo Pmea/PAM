@@ -1,4 +1,4 @@
-% script de test de l'algo de smith_waterman
+% script de test de l'algo de smith_waterman (classique)
 close all;
 clear all;
 

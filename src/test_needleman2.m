@@ -1,4 +1,4 @@
-% script de test de l'algo de Needlenam
+% script de test de l'algo de Needlenam avec gap affine
 close all;
 clear all;
 
@@ -8,8 +8,8 @@ chaineA=[
         'T  ';
         'T  ';
         'A  ';
-       % 'C  ';
-       % 'U  ';
+        'C  ';
+        'U  ';
         ];
         
 chaineB=[
@@ -19,11 +19,11 @@ chaineB=[
         'T  ';
         'A  ';
         'A  ';
-       % 'A  ';
+        'A  ';
         ];
 
 %definition de l'alphabet
-%l'ordre: A G C T
+%l'ordre: A G C T U 
 m_cor= ['A   1'; 
         'G   2'; 
         'C   3'; 
@@ -35,13 +35,9 @@ m_sim= [1 -1 -1 -1 -1;
         -1 -1 1 -1 -1; 
         -1 -1 -1 1 -1; 
         -1 -1 -1 -1 1];
-%m_sim= [10 -1 -3 -4 -1; 
-%          -1 7 -5 -3 -2; 
-%          -3 -5 9 0 -2; 
-%          -4 -3 0 8 -3; 
-%          -1 -2 -2 -3 10];
-open_gap= 0;  % ouverture et extension
-ext_gap= -1;
+
+open_gap= -1;  % ouverture et extension
+ext_gap= -0.5;
 
 [chemin, score]= f_needleman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap);
 

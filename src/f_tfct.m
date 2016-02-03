@@ -1,4 +1,9 @@
 function Xtilde_m = f_tfct (x_v, Nfft, L_n, R)
+% fonction effectuant une tfct parametrique
+% x_v: le signal etudié
+% Nfft: le nombre de points de la fft
+% L_n: la taille de fenetre d'analyse
+% R: Le decalage de la fenetre a chaque iteration
 
 if size(x_v,2) >= 2 
     x_v = (x_v(:,1) + x_v(:,2)) / 2;

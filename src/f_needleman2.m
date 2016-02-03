@@ -1,4 +1,6 @@
 function [chemin, score]= f_needleman2(chaineA, chaineB, m_sim, m_cor, open_gap, ext_gap)
+% calcul du chemin optial dans la matrice grace a l'algorithme de needleman
+% avec les gaps affines
 % chaineA et chaineB, les chaines comparer
 % matrice de similarite (matrice de poids)
 % matrice de correspondence entre l'alphabet et les positions dans la
@@ -70,12 +72,7 @@ for k=2:len_A+1
         ind_A=recheche_cor(chaineA(k-1, 1:3), m_cor);
         ind_B=recheche_cor(chaineB(l-1, 1:3), m_cor);
         delta= m_sim(ind_A, ind_B);
-%         if k == l
-%             disp([k l]);
-%             disp([chaineA(k) chaineB(l)]);
-%             disp([ind_A ind_B]);
-%             disp([m_sim(ind_A, ind_B)]);
-%         end
+
         %calcule du match pour les trois
         val_Lx= m_Lx(k-1, l-1) + delta; 
         val_Ly= m_Ly(k-1, l-1) + delta;
@@ -101,7 +98,7 @@ switch ind_a
        m_antes=m_antes_Lx;
     otherwise
        disp('Erreur valeur de l''antessedant');
-       assert(true);
+       assert(false);
 end
 
 chemin= [];
@@ -127,7 +124,7 @@ while  m_antes(k,l) ~= def_init
             score= score + m_res(k,l);
         otherwise
             disp('Erreur valeur de l''antessedant');
-            assert(true);
+            assert(false);
     end
 end
 chemin= [[1 1]; chemin];
