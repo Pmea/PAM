@@ -29,7 +29,7 @@ Chords = containers.Map(); % Dictionnaire contenant les accords pour chaque morc
                            % et leur temps de début et de fin
 
 %% Extraction des vecteurs d'observation chromas 
-if 0
+if 1
     fprintf(1, 'Calcul des vecteurs d''observations chromas pour tous les morceaux: \n\n');
     directory_function = pwd; % Garde en mémoire le répertoire des fonctions
     
@@ -135,7 +135,7 @@ end
 
 
 %% Mapping avec les annotations
-if 0
+if 1
     fprintf(1, 'Mapping with annotations - Dictionnary with plays:\n\n')
     
     % Mapping avec les annotations
@@ -160,7 +160,7 @@ for k = 1:length(key_chords)
 end
 
 %% Création d'une base de référence - Alternative à l'apprentissage des Beatles
-if 0
+if 1
     fprintf(1, 'Création manuelle d''une autre base de chromas\n\n')
     chords_base = generateChordBase();
     save(FILE_s.EXPE1_BASE_CREATED);
@@ -344,4 +344,4 @@ end
 c_chroma_ref{k}= [0;0;0;0;0;0;0;0;0;0;0;0];
 
 
-%clearvars -except c_chroma_ref c_morceaux 
+% clearvars -except c_chroma_ref c_morceaux 
